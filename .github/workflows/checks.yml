@@ -1,0 +1,23 @@
+name: Checks
+
+on: pull_request
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+
+      - name: build
+        run: docker build --target build -t api .
+
+      - name: tests
+        run: docker run api npm run test:cov
+
+      - name: lint
+        run: docker run api npm run lint
+
+      - name: format
+        run: docker run api npm run format:check
