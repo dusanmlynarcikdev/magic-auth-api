@@ -1,6 +1,6 @@
 export class AuthenticationAlreadyAuthenticatedError extends Error {
   constructor() {
-    super('Authentication has already been authenticated');
+    super('Authentication already authenticated');
   }
 }
 

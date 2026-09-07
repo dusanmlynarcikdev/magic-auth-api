@@ -4,25 +4,52 @@ import {
   AuthenticationAlreadyAuthenticatedError,
   AuthenticationExpiredError,
 } from './app.exceptions.js';
+import type { AuthenticationRow } from './database.schema.js';
 
 export default class Authentication {
   private static readonly TEN_MINUTES_MILLISECONDS = 600_000;
   private static readonly THIRTY_DAYS_MILLISECONDS = 2_592_000_000;
 
-  readonly id: string = uuid7();
-  private _magicToken: string | null = this.generateToken();
-  private _token: string | null = null;
-  private _authenticatedAt: Date | null = null;
-  private _expiresAt: Date;
-
-  constructor(
+  private constructor(
+    readonly id: string,
     readonly userExternalId: string,
-    now: Date,
-  ) {
-    this._expiresAt = this.createExpiresAt(
-      now,
-      Authentication.TEN_MINUTES_MILLISECONDS,
+    private _magicToken: string | null,
+    private _token: string | null,
+    private _authenticatedAt: Date | null,
+    private _expiresAt: Date,
+  ) {}
+
+  static create(userExternalId: string, now: Date): Authentication {
+    return new Authentication(
+      uuid7(),
+      userExternalId,
+      Authentication.generateToken(),
+      null,
+      null,
+      Authentication.createExpiresAt(now),
     );
+  }
+
+  static fromRow(row: AuthenticationRow): Authentication {
+    return new Authentication(
+      row.id,
+      row.userExternalId,
+      row.magicToken,
+      row.token,
+      row.authenticatedAt,
+      row.expiresAt,
+    );
+  }
+
+  toRow(): AuthenticationRow {
+    return {
+      id: this.id,
+      userExternalId: this.userExternalId,
+      magicToken: this.magicToken,
+      token: this.token,
+      authenticatedAt: this.authenticatedAt,
+      expiresAt: this.expiresAt,
+    };
   }
 
   get magicToken(): string | null {
@@ -51,19 +78,22 @@ export default class Authentication {
     }
 
     this._magicToken = null;
-    this._token = this.generateToken();
+    this._token = Authentication.generateToken();
     this._authenticatedAt = now;
-    this._expiresAt = this.createExpiresAt(
+    this._expiresAt = Authentication.createExpiresAt(
       now,
       Authentication.THIRTY_DAYS_MILLISECONDS,
     );
   }
 
-  private createExpiresAt(now: Date, expiration: number) {
+  private static createExpiresAt(
+    now: Date,
+    expiration: number = Authentication.TEN_MINUTES_MILLISECONDS,
+  ) {
     return new Date(now.getTime() + expiration);
   }
 
-  private generateToken(): string {
+  private static generateToken(): string {
     return randomBytes(32).toString('base64url');
   }
 }
