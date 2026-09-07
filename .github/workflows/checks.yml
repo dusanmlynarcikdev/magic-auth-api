@@ -6,6 +6,9 @@ jobs:
   checks:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@database:5432/test
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -22,6 +25,12 @@ jobs:
 
       - name: Build
         run: docker build --target build -t api .
+
+      - name: Database schema
+        run: |
+          docker run --network network -e DATABASE_URL api npm run db:migrate
+          docker run --network network -e DATABASE_URL api npm run db:check | tee /tmp/db-check
+          grep -q no_changes /tmp/db-check
 
       - name: Tests
         run: docker run --network network api npm run test:cov
