@@ -1,5 +1,4 @@
 import { config } from 'dotenv';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 const { parsed } = config({
@@ -12,7 +11,7 @@ export default defineConfig({
   test: {
     projects: [
       {
-        plugins: [tsconfigPaths()],
+        resolve: { tsconfigPaths: true },
         test: {
           name: 'unit',
           globals: true,
@@ -20,7 +19,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [tsconfigPaths()],
+        resolve: { tsconfigPaths: true },
         test: {
           name: 'functional',
           globals: true,
