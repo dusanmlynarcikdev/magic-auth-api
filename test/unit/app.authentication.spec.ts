@@ -4,6 +4,7 @@ import {
   AuthenticationExpiredError,
 } from '../../src/app.exceptions.js';
 import type { AuthenticationRow } from '../../src/database.schema.js';
+import AuthenticationGenerator from '../authentication-generator.js';
 
 const TOKEN_REGEX = /^[\w-]{43}$/;
 
@@ -11,7 +12,7 @@ describe('Authentication', () => {
   const now = new Date('2026-09-04T12:30:45.000Z');
 
   it('create', () => {
-    const authentication = Authentication.create('user-1', now);
+    const authentication = AuthenticationGenerator.generate();
 
     expect(authentication.userExternalId).toBe('user-1');
     expect(authentication.magicToken).toMatch(TOKEN_REGEX);
@@ -23,7 +24,7 @@ describe('Authentication', () => {
   });
 
   it('authenticate', () => {
-    const authentication = Authentication.create('user-1', now);
+    const authentication = AuthenticationGenerator.generate();
 
     authentication.authenticate(now);
 
@@ -36,7 +37,7 @@ describe('Authentication', () => {
   });
 
   it('already authenticated', () => {
-    const authentication = Authentication.create('user-1', now);
+    const authentication = AuthenticationGenerator.generate();
     authentication.authenticate(now);
 
     expect(() => authentication.authenticate(now)).toThrow(
@@ -45,7 +46,7 @@ describe('Authentication', () => {
   });
 
   it('expired', () => {
-    const authentication = Authentication.create('user-1', now);
+    const authentication = AuthenticationGenerator.generate();
 
     expect(() =>
       authentication.authenticate(new Date('2026-09-04T12:40:45.001Z')),
@@ -54,7 +55,7 @@ describe('Authentication', () => {
 
   describe('toRow', () => {
     it('unauthenticated', () => {
-      const authentication = Authentication.create('user-1', now);
+      const authentication = AuthenticationGenerator.generate();
 
       expect(authentication.toRow()).toStrictEqual({
         id: authentication.id,
@@ -67,7 +68,7 @@ describe('Authentication', () => {
     });
 
     it('authenticated', () => {
-      const authentication = Authentication.create('user-1', now);
+      const authentication = AuthenticationGenerator.generate();
       authentication.authenticate(now);
 
       expect(authentication.toRow()).toStrictEqual({

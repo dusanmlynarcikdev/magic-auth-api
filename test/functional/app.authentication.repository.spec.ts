@@ -1,16 +1,10 @@
 import { eq } from 'drizzle-orm';
 import Authentication from '../../src/app.authentication.js';
+import AuthenticationGenerator from '../authentication-generator.js';
 import AuthenticationRepository from '../../src/app.authentication.repository.js';
 import { AuthenticationNotFoundError } from '../../src/app.exceptions.js';
 import { db } from '../../src/database.index.js';
 import { authentications } from '../../src/database.schema.js';
-
-const authenticated = (userExternalId: string, now: Date) => {
-  const authentication = Authentication.create(userExternalId, now);
-  authentication.authenticate(now);
-
-  return authentication;
-};
 
 const expectNotFound = (promise: Promise<Authentication>) =>
   expect(promise).rejects.toThrow(AuthenticationNotFoundError);
@@ -23,7 +17,7 @@ describe('AuthenticationRepository', () => {
     const id = '00000000-0000-0000-0000-000000000000';
 
     it('another id', async () => {
-      await repository.add(Authentication.create('user-1', now));
+      await repository.add(AuthenticationGenerator.generate());
 
       await expectNotFound(repository.get(id));
     });
@@ -33,7 +27,7 @@ describe('AuthenticationRepository', () => {
 
   describe('getByMagicToken', () => {
     it('another token', async () => {
-      await repository.add(Authentication.create('user-1', now));
+      await repository.add(AuthenticationGenerator.generate());
 
       await expectNotFound(repository.getByMagicToken('magic-token-1'));
     });
@@ -44,7 +38,7 @@ describe('AuthenticationRepository', () => {
 
   describe('getByToken', () => {
     it('another token', async () => {
-      await repository.add(authenticated('user-1', now));
+      await repository.add(AuthenticationGenerator.authenticated());
 
       await expectNotFound(repository.getByToken('token-1'));
     });
@@ -55,8 +49,8 @@ describe('AuthenticationRepository', () => {
 
   describe('findUnexpiredWithTokenByUserExternalId', () => {
     it('newest first', async () => {
-      const first = authenticated('user-1', now);
-      const second = authenticated('user-1', now);
+      const first = AuthenticationGenerator.authenticated();
+      const second = AuthenticationGenerator.authenticated();
       await repository.add(first);
       await repository.add(second);
 
@@ -69,7 +63,7 @@ describe('AuthenticationRepository', () => {
     });
 
     it('expired', async () => {
-      await repository.add(authenticated('user-1', now));
+      await repository.add(AuthenticationGenerator.authenticated());
 
       const result = await repository.findUnexpiredWithTokenByUserExternalId(
         'user-1',
@@ -80,7 +74,7 @@ describe('AuthenticationRepository', () => {
     });
 
     it('without token', async () => {
-      await repository.add(Authentication.create('user-1', now));
+      await repository.add(AuthenticationGenerator.generate());
 
       const result = await repository.findUnexpiredWithTokenByUserExternalId(
         'user-1',
@@ -91,7 +85,7 @@ describe('AuthenticationRepository', () => {
     });
 
     it('another user', async () => {
-      await repository.add(authenticated('user-1', now));
+      await repository.add(AuthenticationGenerator.authenticated());
 
       const result = await repository.findUnexpiredWithTokenByUserExternalId(
         'user-2',
@@ -103,8 +97,8 @@ describe('AuthenticationRepository', () => {
   });
 
   it('remove:another authentication is not deleted', async () => {
-    const authentication1 = Authentication.create('user-1', now);
-    const authentication2 = Authentication.create('user-1', now);
+    const authentication1 = AuthenticationGenerator.generate();
+    const authentication2 = AuthenticationGenerator.generate();
     await repository.add(authentication1);
     await repository.add(authentication2);
 
@@ -116,7 +110,7 @@ describe('AuthenticationRepository', () => {
   });
 
   it('removeExpired:unexpired', async () => {
-    const authentication = Authentication.create('user-1', now);
+    const authentication = AuthenticationGenerator.generate();
     await repository.add(authentication);
 
     await repository.removeExpired(now);
@@ -127,8 +121,8 @@ describe('AuthenticationRepository', () => {
   });
 
   it('update:another authentication is not updated', async () => {
-    const authentication1 = Authentication.create('user-1', now);
-    const authentication2 = Authentication.create('user-1', now);
+    const authentication1 = AuthenticationGenerator.generate();
+    const authentication2 = AuthenticationGenerator.generate();
     await repository.add(authentication1);
     await repository.add(authentication2);
 
