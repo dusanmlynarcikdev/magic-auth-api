@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import Authentication from '../../src/app.authentication.js';
 import AuthenticationRepository from '../../src/app.authentication.repository.js';
+import { AuthenticationNotFoundError } from '../../src/app.exceptions.js';
 import { db } from '../../src/database.index.js';
 import { authentications } from '../../src/database.schema.js';
 
@@ -11,55 +12,45 @@ const authenticated = (userExternalId: string, now: Date) => {
   return authentication;
 };
 
+const expectNotFound = (promise: Promise<Authentication>) =>
+  expect(promise).rejects.toThrow(AuthenticationNotFoundError);
+
 describe('AuthenticationRepository', () => {
   const now = new Date('2026-09-04T12:30:45.000Z');
   const repository = new AuthenticationRepository();
 
-  describe('findOneUnexpiredByMagicToken', () => {
-    it('expired', async () => {
-      const authentication = Authentication.create('user-1', now);
-      await repository.add(authentication);
+  describe('get', () => {
+    const id = '00000000-0000-0000-0000-000000000000';
 
-      const result = await repository.findOneUnexpiredByMagicToken(
-        authentication.magicToken!,
-        new Date('2026-09-04T12:40:46.000Z'),
-      );
+    it('another id', async () => {
+      await repository.add(Authentication.create('user-1', now));
 
-      expect(result).toBeNull();
+      await expectNotFound(repository.get(id));
     });
 
+    it('empty database', () => expectNotFound(repository.get(id)));
+  });
+
+  describe('getByMagicToken', () => {
     it('another token', async () => {
       await repository.add(Authentication.create('user-1', now));
 
-      const result = await repository.findOneUnexpiredByMagicToken(
-        'unknown',
-        now,
-      );
-
-      expect(result).toBeNull();
+      await expectNotFound(repository.getByMagicToken('magic-token-1'));
     });
+
+    it('empty database', () =>
+      expectNotFound(repository.getByMagicToken('magic-token-1')));
   });
 
-  describe('findOneUnexpiredByToken', () => {
-    it('expired', async () => {
-      const authentication = authenticated('user-1', now);
-      await repository.add(authentication);
-
-      const result = await repository.findOneUnexpiredByToken(
-        authentication.token!,
-        new Date('2026-10-04T12:30:46.000Z'),
-      );
-
-      expect(result).toBeNull();
-    });
-
+  describe('getByToken', () => {
     it('another token', async () => {
       await repository.add(authenticated('user-1', now));
 
-      const result = await repository.findOneUnexpiredByToken('unknown', now);
-
-      expect(result).toBeNull();
+      await expectNotFound(repository.getByToken('token-1'));
     });
+
+    it('empty database', () =>
+      expectNotFound(repository.getByToken('token-1')));
   });
 
   describe('findUnexpiredWithTokenByUserExternalId', () => {

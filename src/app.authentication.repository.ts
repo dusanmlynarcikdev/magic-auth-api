@@ -1,5 +1,6 @@
 import { and, desc, eq, gte, lt, isNotNull } from 'drizzle-orm';
 import Authentication from './app.authentication.js';
+import { AuthenticationNotFoundError } from './app.exceptions.js';
 import { db } from './database.index.js';
 import { authentications } from './database.schema.js';
 
@@ -8,40 +9,43 @@ export default class AuthenticationRepository {
     await db.insert(authentications).values(authentication.toRow());
   }
 
-  async findOneUnexpiredByMagicToken(
-    magicToken: string,
-    now: Date,
-  ): Promise<Authentication | null> {
+  async get(id: string): Promise<Authentication> {
     const [row] = await db
       .select()
       .from(authentications)
-      .where(
-        and(
-          eq(authentications.magicToken, magicToken),
-          gte(authentications.expiresAt, now),
-        ),
-      )
-      .limit(1);
+      .where(eq(authentications.id, id));
 
-    return row ? Authentication.fromRow(row) : null;
+    if (!row) {
+      throw new AuthenticationNotFoundError();
+    }
+
+    return Authentication.fromRow(row);
   }
 
-  async findOneUnexpiredByToken(
-    token: string,
-    now: Date,
-  ): Promise<Authentication | null> {
+  async getByMagicToken(magicToken: string): Promise<Authentication> {
     const [row] = await db
       .select()
       .from(authentications)
-      .where(
-        and(
-          eq(authentications.token, token),
-          gte(authentications.expiresAt, now),
-        ),
-      )
-      .limit(1);
+      .where(eq(authentications.magicToken, magicToken));
 
-    return row ? Authentication.fromRow(row) : null;
+    if (!row) {
+      throw new AuthenticationNotFoundError();
+    }
+
+    return Authentication.fromRow(row);
+  }
+
+  async getByToken(token: string): Promise<Authentication> {
+    const [row] = await db
+      .select()
+      .from(authentications)
+      .where(eq(authentications.token, token));
+
+    if (!row) {
+      throw new AuthenticationNotFoundError();
+    }
+
+    return Authentication.fromRow(row);
   }
 
   async findUnexpiredWithTokenByUserExternalId(

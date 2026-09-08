@@ -9,3 +9,9 @@ export class AuthenticationExpiredError extends Error {
     super('Authentication expired');
   }
 }
+
+export class AuthenticationNotFoundError extends Error {
+  constructor() {
+    super('Authentication not found');
+  }
+}
