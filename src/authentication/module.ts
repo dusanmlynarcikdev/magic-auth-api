@@ -5,7 +5,6 @@ import AuthenticationRepository from './repository.js';
 import ClockProvider from '../clock.provider.js';
 
 @Module({
-  imports: [],
   controllers: [AuthenticationCreateController],
   providers: [
     AuthenticationCreateUseCase,
