@@ -12,7 +12,7 @@ export async function createApplication(
     imports: [AppModule],
   })
     .overrideProvider(ClockProvider)
-    .useValue({ now: () => now })
+    .useValue({ now: () => now } satisfies ClockProvider)
     .compile();
 
   const application = module.createNestApplication<INestApplication<App>>();
