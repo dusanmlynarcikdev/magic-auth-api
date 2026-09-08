@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import Authentication from './authentication.js';
-import AuthenticationRepository from './authentication.repository.js';
-import ClockProvider from './clock.provider.js';
+import Authentication from './entity.js';
+import AuthenticationRepository from './repository.js';
+import ClockProvider from '../clock.provider.js';
 
 @Injectable()
 export default class AuthenticationCreateUseCase {
