@@ -1,10 +1,9 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
-import { db } from '../../src/database.client.js';
-import { authentications } from '../../src/database.schema.js';
 import AuthenticationFactory from '../support/authentication.factory.js';
 import { createApplication } from '../support/application.js';
+import AuthenticationQuery from '../support/authentication.query.js';
 
 describe('AuthenticationCreateController', () => {
   let app: INestApplication<App>;
@@ -25,7 +24,7 @@ describe('AuthenticationCreateController', () => {
       magicToken: expect.stringMatching(AuthenticationFactory.TOKEN_REGEX),
     });
 
-    const authenticationRows = await db.select().from(authentications);
+    const authenticationRows = await AuthenticationQuery.findAll();
     expect(authenticationRows).toHaveLength(1);
     expect(authenticationRows[0]).toStrictEqual({
       id: expect.any(String),

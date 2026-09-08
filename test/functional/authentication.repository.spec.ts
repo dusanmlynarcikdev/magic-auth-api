@@ -1,10 +1,8 @@
-import { eq } from 'drizzle-orm';
 import Authentication from '../../src/authentication.js';
 import AuthenticationFactory from '../support/authentication.factory.js';
 import AuthenticationRepository from '../../src/authentication.repository.js';
 import { AuthenticationNotFoundError } from '../../src/authentication.errors.js';
-import { db } from '../../src/database.client.js';
-import { authentications } from '../../src/database.schema.js';
+import AuthenticationQuery from '../support/authentication.query.js';
 
 const expectNotFound = (promise: Promise<Authentication>) =>
   expect(promise).rejects.toThrow(AuthenticationNotFoundError);
@@ -104,9 +102,9 @@ describe('AuthenticationRepository', () => {
 
     await repository.remove(authentication1);
 
-    const authenticationsRepository = await db.select().from(authentications);
-    expect(authenticationsRepository).toHaveLength(1);
-    expect(authenticationsRepository[0].id).toBe(authentication2.id);
+    const authenticationRows = await AuthenticationQuery.findAll();
+    expect(authenticationRows).toHaveLength(1);
+    expect(authenticationRows[0].id).toBe(authentication2.id);
   });
 
   it('removeExpired:unexpired', async () => {
@@ -115,9 +113,9 @@ describe('AuthenticationRepository', () => {
 
     await repository.removeExpired(now);
 
-    const authenticationsRepository = await db.select().from(authentications);
-    expect(authenticationsRepository).toHaveLength(1);
-    expect(authenticationsRepository[0].id).toBe(authentication.id);
+    const authenticationRows = await AuthenticationQuery.findAll();
+    expect(authenticationRows).toHaveLength(1);
+    expect(authenticationRows[0].id).toBe(authentication.id);
   });
 
   it('update:another authentication is not updated', async () => {
@@ -130,18 +128,8 @@ describe('AuthenticationRepository', () => {
 
     await repository.update(authentication1);
 
-    const [authentication2Repository] = await db
-      .select()
-      .from(authentications)
-      .where(eq(authentications.id, authentication2.id));
+    const _authentication2 = await repository.get(authentication2.id);
 
-    expect(authentication2Repository).toStrictEqual({
-      id: authentication2.id,
-      userExternalId: authentication2.userExternalId,
-      magicToken: authentication2.magicToken,
-      token: null,
-      authenticatedAt: null,
-      expiresAt: authentication2.expiresAt,
-    });
+    expect(_authentication2).toStrictEqual(authentication2);
   });
 });
