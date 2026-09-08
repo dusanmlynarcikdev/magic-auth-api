@@ -12,3 +12,13 @@ services:
     restart: always
     volumes:
       - ./:/app
+
+  database:
+    environment:
+      POSTGRES_PASSWORD: postgres
+    image: postgres:18.3
+    ports:
+      - '5432:5432'
+    restart: always
+    volumes:
+      - ./.docker/postgres:/var/lib/postgresql
