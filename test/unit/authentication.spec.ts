@@ -6,8 +6,6 @@ import {
 import type { AuthenticationRow } from '../../src/database.schema.js';
 import AuthenticationFactory from '../support/authentication.factory.js';
 
-const TOKEN_REGEX = /^[\w-]{43}$/;
-
 describe('Authentication', () => {
   const now = AuthenticationFactory.NOW;
 
@@ -15,7 +13,9 @@ describe('Authentication', () => {
     const authentication = AuthenticationFactory.create();
 
     expect(authentication.userExternalId).toBe('user-1');
-    expect(authentication.magicToken).toMatch(TOKEN_REGEX);
+    expect(authentication.magicToken).toMatch(
+      AuthenticationFactory.TOKEN_REGEX,
+    );
     expect(authentication.token).toBeNull();
     expect(authentication.authenticatedAt).toBeNull();
     expect(authentication.expiresAt).toStrictEqual(
@@ -30,7 +30,7 @@ describe('Authentication', () => {
       authentication.authenticate(now);
 
       expect(authentication.magicToken).toBeNull();
-      expect(authentication.token).toMatch(TOKEN_REGEX);
+      expect(authentication.token).toMatch(AuthenticationFactory.TOKEN_REGEX);
       expect(authentication.authenticatedAt).toBe(now);
       expect(authentication.expiresAt).toStrictEqual(
         new Date('2026-10-04T12:30:45.000Z'),
