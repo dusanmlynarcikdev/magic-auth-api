@@ -73,9 +73,7 @@ export default class Authentication {
       throw new AuthenticationAlreadyAuthenticatedError();
     }
 
-    if (now > this.expiresAt) {
-      throw new AuthenticationExpiredError();
-    }
+    this.checkExpiration(now);
 
     this._magicToken = null;
     this._token = Authentication.generateToken();
@@ -84,6 +82,12 @@ export default class Authentication {
       now,
       Authentication.THIRTY_DAYS_MILLISECONDS,
     );
+  }
+
+  checkExpiration(now: Date) {
+    if (now > this.expiresAt) {
+      throw new AuthenticationExpiredError();
+    }
   }
 
   private static createExpiresAt(

@@ -23,34 +23,55 @@ describe('Authentication', () => {
     );
   });
 
-  it('authenticate', () => {
-    const authentication = AuthenticationGenerator.generate();
+  describe('authenticate', () => {
+    it('success', () => {
+      const authentication = AuthenticationGenerator.generate();
 
-    authentication.authenticate(now);
+      authentication.authenticate(now);
 
-    expect(authentication.magicToken).toBeNull();
-    expect(authentication.token).toMatch(TOKEN_REGEX);
-    expect(authentication.authenticatedAt).toBe(now);
-    expect(authentication.expiresAt).toStrictEqual(
-      new Date('2026-10-04T12:30:45.000Z'),
-    );
+      expect(authentication.magicToken).toBeNull();
+      expect(authentication.token).toMatch(TOKEN_REGEX);
+      expect(authentication.authenticatedAt).toBe(now);
+      expect(authentication.expiresAt).toStrictEqual(
+        new Date('2026-10-04T12:30:45.000Z'),
+      );
+    });
+
+    it('already authenticated', () => {
+      const authentication = AuthenticationGenerator.generate();
+      authentication.authenticate(now);
+
+      expect(() => authentication.authenticate(now)).toThrow(
+        AuthenticationAlreadyAuthenticatedError,
+      );
+    });
+
+    it('expired', () => {
+      const authentication = AuthenticationGenerator.generate();
+
+      expect(() =>
+        authentication.authenticate(new Date('2026-09-04T12:40:45.001Z')),
+      ).toThrow(AuthenticationExpiredError);
+    });
   });
 
-  it('already authenticated', () => {
-    const authentication = AuthenticationGenerator.generate();
-    authentication.authenticate(now);
+  describe('checkExpiration', () => {
+    it('expired', () => {
+      const authentication = AuthenticationGenerator.generate();
 
-    expect(() => authentication.authenticate(now)).toThrow(
-      AuthenticationAlreadyAuthenticatedError,
-    );
-  });
+      expect(() =>
+        authentication.authenticate(new Date('2026-09-04T12:40:45.001Z')),
+      ).toThrow(AuthenticationExpiredError);
+    });
 
-  it('expired', () => {
-    const authentication = AuthenticationGenerator.generate();
+    it.each([
+      new Date('2026-09-04T12:40:45.000Z'),
+      new Date('2026-09-04T12:40:44.999Z'),
+    ])('unexpired at %s', (now) => {
+      const authentication = AuthenticationGenerator.generate();
 
-    expect(() =>
-      authentication.authenticate(new Date('2026-09-04T12:40:45.001Z')),
-    ).toThrow(AuthenticationExpiredError);
+      expect(() => authentication.authenticate(now)).not.toThrow();
+    });
   });
 
   describe('toRow', () => {
