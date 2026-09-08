@@ -55,6 +55,24 @@ describe('Authentication', () => {
     });
   });
 
+  describe('requireMagicToken', () => {
+    it('success', () => {
+      const authentication = AuthenticationFactory.create();
+
+      expect(authentication.requireMagicToken()).toBe(
+        authentication.magicToken,
+      );
+    });
+
+    it('missing', () => {
+      const authentication = AuthenticationFactory.authenticated();
+
+      expect(() => authentication.requireMagicToken()).toThrow(
+        'Magic token is missing',
+      );
+    });
+  });
+
   describe('checkExpiration', () => {
     it('expired', () => {
       const authentication = AuthenticationFactory.create();

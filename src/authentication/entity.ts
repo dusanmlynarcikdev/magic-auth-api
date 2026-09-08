@@ -56,6 +56,14 @@ export default class Authentication {
     return this._magicToken;
   }
 
+  requireMagicToken(): string {
+    if (!this.magicToken) {
+      throw new Error('Magic token is missing');
+    }
+
+    return this.magicToken;
+  }
+
   get token(): string | null {
     return this._token;
   }

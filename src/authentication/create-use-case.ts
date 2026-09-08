@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-
 import Authentication from './entity.js';
 import AuthenticationRepository from './repository.js';
 import ClockProvider from '../clock.provider.js';
@@ -17,8 +16,10 @@ export default class AuthenticationCreateUseCase {
       this.clock.now(),
     );
 
+    const magicToken = authentication.requireMagicToken();
+
     await this.authenticationRepository.add(authentication);
 
-    return authentication.magicToken!;
+    return magicToken;
   }
 }
