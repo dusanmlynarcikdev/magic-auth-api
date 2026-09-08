@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { db } from '../../src/database.client.js';
 
-// only queries on the same connection
+// ensure all queries use the same connection
 db.$client.options.max = 1;
 
 beforeEach(() => db.execute(sql`begin`));
