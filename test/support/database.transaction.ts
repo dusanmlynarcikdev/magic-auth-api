@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { db } from '../../src/database.index.js';
+import { db } from '../../src/database.client.js';
 
 // only queries on the same connection
 db.$client.options.max = 1;

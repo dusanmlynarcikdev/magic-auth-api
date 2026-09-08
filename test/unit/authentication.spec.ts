@@ -1,10 +1,10 @@
-import Authentication from '../../src/app.authentication.js';
+import Authentication from '../../src/authentication.js';
 import {
   AuthenticationAlreadyAuthenticatedError,
   AuthenticationExpiredError,
-} from '../../src/app.exceptions.js';
+} from '../../src/authentication.errors.js';
 import type { AuthenticationRow } from '../../src/database.schema.js';
-import AuthenticationGenerator from '../authentication-generator.js';
+import AuthenticationFactory from '../support/authentication.factory.js';
 
 const TOKEN_REGEX = /^[\w-]{43}$/;
 
@@ -12,7 +12,7 @@ describe('Authentication', () => {
   const now = new Date('2026-09-04T12:30:45.000Z');
 
   it('create', () => {
-    const authentication = AuthenticationGenerator.generate();
+    const authentication = AuthenticationFactory.create();
 
     expect(authentication.userExternalId).toBe('user-1');
     expect(authentication.magicToken).toMatch(TOKEN_REGEX);
@@ -25,7 +25,7 @@ describe('Authentication', () => {
 
   describe('authenticate', () => {
     it('success', () => {
-      const authentication = AuthenticationGenerator.generate();
+      const authentication = AuthenticationFactory.create();
 
       authentication.authenticate(now);
 
@@ -38,7 +38,7 @@ describe('Authentication', () => {
     });
 
     it('already authenticated', () => {
-      const authentication = AuthenticationGenerator.generate();
+      const authentication = AuthenticationFactory.create();
       authentication.authenticate(now);
 
       expect(() => authentication.authenticate(now)).toThrow(
@@ -47,7 +47,7 @@ describe('Authentication', () => {
     });
 
     it('expired', () => {
-      const authentication = AuthenticationGenerator.generate();
+      const authentication = AuthenticationFactory.create();
 
       expect(() =>
         authentication.authenticate(new Date('2026-09-04T12:40:45.001Z')),
@@ -57,7 +57,7 @@ describe('Authentication', () => {
 
   describe('checkExpiration', () => {
     it('expired', () => {
-      const authentication = AuthenticationGenerator.generate();
+      const authentication = AuthenticationFactory.create();
 
       expect(() =>
         authentication.authenticate(new Date('2026-09-04T12:40:45.001Z')),
@@ -68,7 +68,7 @@ describe('Authentication', () => {
       new Date('2026-09-04T12:40:45.000Z'),
       new Date('2026-09-04T12:40:44.999Z'),
     ])('unexpired at %s', (now) => {
-      const authentication = AuthenticationGenerator.generate();
+      const authentication = AuthenticationFactory.create();
 
       expect(() => authentication.authenticate(now)).not.toThrow();
     });
@@ -76,7 +76,7 @@ describe('Authentication', () => {
 
   describe('toRow', () => {
     it('unauthenticated', () => {
-      const authentication = AuthenticationGenerator.generate();
+      const authentication = AuthenticationFactory.create();
 
       expect(authentication.toRow()).toStrictEqual({
         id: authentication.id,
@@ -89,7 +89,7 @@ describe('Authentication', () => {
     });
 
     it('authenticated', () => {
-      const authentication = AuthenticationGenerator.generate();
+      const authentication = AuthenticationFactory.create();
       authentication.authenticate(now);
 
       expect(authentication.toRow()).toStrictEqual({

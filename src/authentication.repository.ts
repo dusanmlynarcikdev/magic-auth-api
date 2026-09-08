@@ -1,7 +1,7 @@
 import { and, desc, eq, gte, lt, isNotNull } from 'drizzle-orm';
-import Authentication from './app.authentication.js';
-import { AuthenticationNotFoundError } from './app.exceptions.js';
-import { db } from './database.index.js';
+import Authentication from './authentication.js';
+import { AuthenticationNotFoundError } from './authentication.errors.js';
+import { db } from './database.client.js';
 import { authentications } from './database.schema.js';
 
 export default class AuthenticationRepository {

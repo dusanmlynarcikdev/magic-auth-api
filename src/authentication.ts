@@ -3,7 +3,7 @@ import { v7 as uuid7 } from 'uuid';
 import {
   AuthenticationAlreadyAuthenticatedError,
   AuthenticationExpiredError,
-} from './app.exceptions.js';
+} from './authentication.errors.js';
 import type { AuthenticationRow } from './database.schema.js';
 
 export default class Authentication {
