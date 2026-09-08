@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, lt, isNotNull } from 'drizzle-orm';
+import { and, desc, eq, gte, lt, isNotNull, type SQL } from 'drizzle-orm';
 import Authentication from './authentication.js';
 import { AuthenticationNotFoundError } from './authentication.errors.js';
 import { db } from './database.client.js';
@@ -10,42 +10,15 @@ export default class AuthenticationRepository {
   }
 
   async get(id: string): Promise<Authentication> {
-    const [row] = await db
-      .select()
-      .from(authentications)
-      .where(eq(authentications.id, id));
-
-    if (!row) {
-      throw new AuthenticationNotFoundError();
-    }
-
-    return Authentication.fromRow(row);
+    return this.getBy(eq(authentications.id, id));
   }
 
   async getByMagicToken(magicToken: string): Promise<Authentication> {
-    const [row] = await db
-      .select()
-      .from(authentications)
-      .where(eq(authentications.magicToken, magicToken));
-
-    if (!row) {
-      throw new AuthenticationNotFoundError();
-    }
-
-    return Authentication.fromRow(row);
+    return this.getBy(eq(authentications.magicToken, magicToken));
   }
 
   async getByToken(token: string): Promise<Authentication> {
-    const [row] = await db
-      .select()
-      .from(authentications)
-      .where(eq(authentications.token, token));
-
-    if (!row) {
-      throw new AuthenticationNotFoundError();
-    }
-
-    return Authentication.fromRow(row);
+    return this.getBy(eq(authentications.token, token));
   }
 
   async findUnexpiredWithTokenByUserExternalId(
@@ -82,5 +55,15 @@ export default class AuthenticationRepository {
       .update(authentications)
       .set(authentication.toRow())
       .where(eq(authentications.id, authentication.id));
+  }
+
+  private async getBy(where: SQL): Promise<Authentication> {
+    const [row] = await db.select().from(authentications).where(where);
+
+    if (!row) {
+      throw new AuthenticationNotFoundError();
+    }
+
+    return Authentication.fromRow(row);
   }
 }

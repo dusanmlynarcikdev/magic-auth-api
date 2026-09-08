@@ -10,7 +10,7 @@ const expectNotFound = (promise: Promise<Authentication>) =>
   expect(promise).rejects.toThrow(AuthenticationNotFoundError);
 
 describe('AuthenticationRepository', () => {
-  const now = new Date('2026-09-04T12:30:45.000Z');
+  const now = AuthenticationFactory.NOW;
   const repository = new AuthenticationRepository();
 
   describe('get', () => {

@@ -9,7 +9,7 @@ import AuthenticationFactory from '../support/authentication.factory.js';
 const TOKEN_REGEX = /^[\w-]{43}$/;
 
 describe('Authentication', () => {
-  const now = new Date('2026-09-04T12:30:45.000Z');
+  const now = AuthenticationFactory.NOW;
 
   it('create', () => {
     const authentication = AuthenticationFactory.create();
@@ -60,7 +60,7 @@ describe('Authentication', () => {
       const authentication = AuthenticationFactory.create();
 
       expect(() =>
-        authentication.authenticate(new Date('2026-09-04T12:40:45.001Z')),
+        authentication.checkExpiration(new Date('2026-09-04T12:40:45.001Z')),
       ).toThrow(AuthenticationExpiredError);
     });
 
@@ -70,7 +70,7 @@ describe('Authentication', () => {
     ])('unexpired at %s', (now) => {
       const authentication = AuthenticationFactory.create();
 
-      expect(() => authentication.authenticate(now)).not.toThrow();
+      expect(() => authentication.checkExpiration(now)).not.toThrow();
     });
   });
 

@@ -6,6 +6,12 @@ const DUPLICATE_DATABASE_ERROR_CODE = '42P04';
 
 export async function setup(): Promise<void> {
   const databaseUrl = new URL(process.env.DATABASE_URL!);
+
+  await createDatabase(databaseUrl);
+  await migrateDatabase(databaseUrl);
+}
+
+async function createDatabase(databaseUrl: URL): Promise<void> {
   const databaseName = databaseUrl.pathname.slice(1);
 
   const postgresUrl = new URL(databaseUrl);
@@ -23,7 +29,9 @@ export async function setup(): Promise<void> {
   } finally {
     await client.end();
   }
+}
 
+async function migrateDatabase(databaseUrl: URL): Promise<void> {
   const db = drizzle(databaseUrl.toString());
 
   try {

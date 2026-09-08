@@ -68,7 +68,7 @@ export default class Authentication {
     return this._expiresAt;
   }
 
-  authenticate(now: Date) {
+  authenticate(now: Date): void {
     if (this.token) {
       throw new AuthenticationAlreadyAuthenticatedError();
     }
@@ -84,7 +84,7 @@ export default class Authentication {
     );
   }
 
-  checkExpiration(now: Date) {
+  checkExpiration(now: Date): void {
     if (now > this.expiresAt) {
       throw new AuthenticationExpiredError();
     }
@@ -93,7 +93,7 @@ export default class Authentication {
   private static createExpiresAt(
     now: Date,
     expiration: number = Authentication.TEN_MINUTES_MILLISECONDS,
-  ) {
+  ): Date {
     return new Date(now.getTime() + expiration);
   }
 

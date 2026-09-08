@@ -1,7 +1,7 @@
 import Authentication from '../../src/authentication.js';
 
 export default class AuthenticationFactory {
-  private static NOW = new Date('2026-09-04T12:30:45.000Z');
+  static readonly NOW = new Date('2026-09-04T12:30:45.000Z');
 
   static authenticated(): Authentication {
     const authentication = AuthenticationFactory.create();
