@@ -16,12 +16,12 @@ export default class AuthenticateUseCase {
       this.tokenProvider.hash(magicToken),
     );
 
-    const now = this.clockProvider.now();
-    authentication.checkExpiration(now);
-
     const token = this.tokenProvider.generate();
-    authentication.authenticate(this.tokenProvider.hash(token), now);
-    this.authenticationRepository.update(authentication);
+    authentication.authenticate(
+      this.tokenProvider.hash(token),
+      this.clockProvider.now(),
+    );
+    await this.authenticationRepository.update(authentication);
 
     return token;
   }
