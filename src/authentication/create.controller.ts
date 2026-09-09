@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import AuthenticationCreateUseCase from './create-use-case.js';
+import AuthenticationCreateUseCase from './create.use-case.js';
 import { AuthenticationCreateRequest } from './requests.js';
 
 @Controller('authentications')
