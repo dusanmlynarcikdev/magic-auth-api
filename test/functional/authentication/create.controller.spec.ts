@@ -1,9 +1,9 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
-import AuthenticationFactory from '../../support/authentication.factory.js';
 import { createApplication } from '../../support/application.js';
 import AuthenticationQuery from '../../support/authentication.query.js';
+import TokenProvider from '../../../src/token.provider.js';
 
 describe('AuthenticationCreateController', () => {
   let app: INestApplication<App>;
@@ -21,7 +21,7 @@ describe('AuthenticationCreateController', () => {
       .expect(HttpStatus.CREATED);
 
     expect(response.body).toStrictEqual({
-      magicToken: expect.stringMatching(AuthenticationFactory.TOKEN_REGEX),
+      magicToken: expect.stringMatching(/^[\w-]{43}$/),
     });
 
     const authenticationRows = await AuthenticationQuery.findAll();
@@ -29,7 +29,7 @@ describe('AuthenticationCreateController', () => {
     expect(authenticationRows[0]).toStrictEqual({
       id: expect.any(String),
       userExternalId: 'user-1',
-      magicToken: response.body.magicToken,
+      magicToken: new TokenProvider().hash(response.body.magicToken),
       token: null,
       authenticatedAt: null,
       expiresAt: new Date('2026-09-04T12:40:45.000Z'),

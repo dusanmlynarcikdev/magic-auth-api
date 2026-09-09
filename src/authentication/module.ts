@@ -3,6 +3,7 @@ import AuthenticationCreateController from './create.controller.js';
 import AuthenticationCreateUseCase from './create.use-case.js';
 import AuthenticationRepository from './repository.js';
 import ClockProvider from '../clock.provider.js';
+import TokenProvider from '../token.provider.js';
 
 @Module({
   controllers: [AuthenticationCreateController],
@@ -10,6 +11,7 @@ import ClockProvider from '../clock.provider.js';
     AuthenticationCreateUseCase,
     AuthenticationRepository,
     ClockProvider,
+    TokenProvider,
   ],
 })
 export default class AuthenticationModule {}

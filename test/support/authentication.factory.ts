@@ -2,16 +2,20 @@ import Authentication from '../../src/authentication/entity.js';
 
 export default class AuthenticationFactory {
   static readonly NOW = new Date('2026-09-04T12:30:45.000Z');
-  static readonly TOKEN_REGEX = /^[\w-]{43}$/;
 
-  static authenticated(): Authentication {
+  static authenticated(token: string = 'token-1'): Authentication {
     const authentication = AuthenticationFactory.create();
-    authentication.authenticate(AuthenticationFactory.NOW);
+
+    authentication.authenticate(token, AuthenticationFactory.NOW);
 
     return authentication;
   }
 
-  static create(): Authentication {
-    return Authentication.create('user-1', AuthenticationFactory.NOW);
+  static create(magicToken: string = 'magic-token-1'): Authentication {
+    return Authentication.create(
+      'user-1',
+      magicToken,
+      AuthenticationFactory.NOW,
+    );
   }
 }

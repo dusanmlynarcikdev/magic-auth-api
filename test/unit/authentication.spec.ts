@@ -8,14 +8,13 @@ import AuthenticationFactory from '../support/authentication.factory.js';
 
 describe('Authentication', () => {
   const now = AuthenticationFactory.NOW;
+  const token = 'token-1';
 
   it('create', () => {
-    const authentication = AuthenticationFactory.create();
+    const authentication = Authentication.create('user-1', token, now);
 
     expect(authentication.userExternalId).toBe('user-1');
-    expect(authentication.magicToken).toMatch(
-      AuthenticationFactory.TOKEN_REGEX,
-    );
+    expect(authentication.magicToken).toBe(token);
     expect(authentication.token).toBeNull();
     expect(authentication.authenticatedAt).toBeNull();
     expect(authentication.expiresAt).toStrictEqual(
@@ -27,10 +26,10 @@ describe('Authentication', () => {
     it('success', () => {
       const authentication = AuthenticationFactory.create();
 
-      authentication.authenticate(now);
+      authentication.authenticate(token, now);
 
       expect(authentication.magicToken).toBeNull();
-      expect(authentication.token).toMatch(AuthenticationFactory.TOKEN_REGEX);
+      expect(authentication.token).toBe(token);
       expect(authentication.authenticatedAt).toBe(now);
       expect(authentication.expiresAt).toStrictEqual(
         new Date('2026-10-04T12:30:45.000Z'),
@@ -39,9 +38,9 @@ describe('Authentication', () => {
 
     it('already authenticated', () => {
       const authentication = AuthenticationFactory.create();
-      authentication.authenticate(now);
+      authentication.authenticate(token, now);
 
-      expect(() => authentication.authenticate(now)).toThrow(
+      expect(() => authentication.authenticate(token, now)).toThrow(
         AuthenticationAlreadyAuthenticatedError,
       );
     });
@@ -50,26 +49,11 @@ describe('Authentication', () => {
       const authentication = AuthenticationFactory.create();
 
       expect(() =>
-        authentication.authenticate(new Date('2026-09-04T12:40:45.001Z')),
+        authentication.authenticate(
+          token,
+          new Date('2026-09-04T12:40:45.001Z'),
+        ),
       ).toThrow(AuthenticationExpiredError);
-    });
-  });
-
-  describe('requireMagicToken', () => {
-    it('success', () => {
-      const authentication = AuthenticationFactory.create();
-
-      expect(authentication.requireMagicToken()).toBe(
-        authentication.magicToken,
-      );
-    });
-
-    it('missing', () => {
-      const authentication = AuthenticationFactory.authenticated();
-
-      expect(() => authentication.requireMagicToken()).toThrow(
-        'Magic token is missing',
-      );
     });
   });
 
@@ -108,7 +92,7 @@ describe('Authentication', () => {
 
     it('authenticated', () => {
       const authentication = AuthenticationFactory.create();
-      authentication.authenticate(now);
+      authentication.authenticate('token-1', now);
 
       expect(authentication.toRow()).toStrictEqual({
         id: authentication.id,

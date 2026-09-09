@@ -1,4 +1,3 @@
-import { randomBytes } from 'node:crypto';
 import { v7 as uuid7 } from 'uuid';
 import {
   AuthenticationAlreadyAuthenticatedError,
@@ -19,11 +18,15 @@ export default class Authentication {
     private _expiresAt: Date,
   ) {}
 
-  static create(userExternalId: string, now: Date): Authentication {
+  static create(
+    userExternalId: string,
+    magicToken: string,
+    now: Date,
+  ): Authentication {
     return new Authentication(
       uuid7(),
       userExternalId,
-      Authentication.generateToken(),
+      magicToken,
       null,
       null,
       Authentication.createExpiresAt(now),
@@ -56,14 +59,6 @@ export default class Authentication {
     return this._magicToken;
   }
 
-  requireMagicToken(): string {
-    if (!this.magicToken) {
-      throw new Error('Magic token is missing');
-    }
-
-    return this.magicToken;
-  }
-
   get token(): string | null {
     return this._token;
   }
@@ -76,7 +71,7 @@ export default class Authentication {
     return this._expiresAt;
   }
 
-  authenticate(now: Date): void {
+  authenticate(token: string, now: Date): void {
     if (this.token) {
       throw new AuthenticationAlreadyAuthenticatedError();
     }
@@ -84,7 +79,7 @@ export default class Authentication {
     this.checkExpiration(now);
 
     this._magicToken = null;
-    this._token = Authentication.generateToken();
+    this._token = token;
     this._authenticatedAt = now;
     this._expiresAt = Authentication.createExpiresAt(
       now,
@@ -103,9 +98,5 @@ export default class Authentication {
     expiration: number = Authentication.TEN_MINUTES_MILLISECONDS,
   ): Date {
     return new Date(now.getTime() + expiration);
-  }
-
-  private static generateToken(): string {
-    return randomBytes(32).toString('base64url');
   }
 }
