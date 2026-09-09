@@ -3,8 +3,8 @@ import { v7 as uuid7 } from 'uuid';
 import {
   AuthenticationAlreadyAuthenticatedError,
   AuthenticationExpiredError,
-} from './authentication.errors.js';
-import type { AuthenticationRow } from './database.schema.js';
+} from './errors.js';
+import type { AuthenticationRow } from '../database.schema.js';
 
 export default class Authentication {
   private static readonly TEN_MINUTES_MILLISECONDS = 600_000;
@@ -54,6 +54,14 @@ export default class Authentication {
 
   get magicToken(): string | null {
     return this._magicToken;
+  }
+
+  requireMagicToken(): string {
+    if (!this.magicToken) {
+      throw new Error('Magic token is missing');
+    }
+
+    return this.magicToken;
   }
 
   get token(): string | null {

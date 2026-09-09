@@ -1,9 +1,11 @@
 import { and, desc, eq, gte, lt, isNotNull, type SQL } from 'drizzle-orm';
-import Authentication from './authentication.js';
-import { AuthenticationNotFoundError } from './authentication.errors.js';
-import { db } from './database.client.js';
-import { authentications } from './database.schema.js';
+import { Injectable } from '@nestjs/common';
+import Authentication from './entity.js';
+import { AuthenticationNotFoundError } from './errors.js';
+import { db } from '../database.client.js';
+import { authentications } from '../database.schema.js';
 
+@Injectable()
 export default class AuthenticationRepository {
   async add(authentication: Authentication): Promise<void> {
     await db.insert(authentications).values(authentication.toRow());

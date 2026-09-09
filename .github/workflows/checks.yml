@@ -26,6 +26,9 @@ jobs:
       - name: Build
         run: docker build --target build -t api .
 
+      - name: Types
+        run: docker run api npm run type
+
       - name: Database schema
         run: |
           docker run --network network -e DATABASE_URL api npm run db:migrate

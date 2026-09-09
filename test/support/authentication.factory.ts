@@ -1,7 +1,8 @@
-import Authentication from '../../src/authentication.js';
+import Authentication from '../../src/authentication/entity.js';
 
 export default class AuthenticationFactory {
   static readonly NOW = new Date('2026-09-04T12:30:45.000Z');
+  static readonly TOKEN_REGEX = /^[\w-]{43}$/;
 
   static authenticated(): Authentication {
     const authentication = AuthenticationFactory.create();
