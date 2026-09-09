@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import Authentication from './entity.js';
-import AuthenticationRepository from './repository.js';
-import ClockProvider from '../clock.provider.js';
-import TokenProvider from '../token.provider.js';
+import Authentication from '../entity.js';
+import AuthenticationRepository from '../repository.js';
+import ClockProvider from '../../clock.provider.js';
+import TokenProvider from '../../token.provider.js';
 
 @Injectable()
 export default class AuthenticationCreateUseCase {
@@ -12,7 +12,7 @@ export default class AuthenticationCreateUseCase {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async create(userExternalId: string): Promise<string> {
+  async execute(userExternalId: string): Promise<string> {
     const magicToken = this.tokenProvider.generate();
 
     const authentication = Authentication.create(

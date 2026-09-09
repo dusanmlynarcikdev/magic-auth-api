@@ -1,8 +1,8 @@
 import Authentication from '../../../src/authentication/entity.js';
-import AuthenticationFactory from '../../support/authentication.factory.js';
+import AuthenticationFactory from '../../support/authentication/factory.js';
 import AuthenticationRepository from '../../../src/authentication/repository.js';
 import { AuthenticationNotFoundError } from '../../../src/authentication/errors.js';
-import AuthenticationQuery from '../../support/authentication.query.js';
+import AuthenticationQuery from '../../support/authentication/query.js';
 
 const expectNotFound = (promise: Promise<Authentication>) =>
   expect(promise).rejects.toThrow(AuthenticationNotFoundError);

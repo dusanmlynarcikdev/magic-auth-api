@@ -1,9 +1,6 @@
 import { v7 as uuid7 } from 'uuid';
-import {
-  AuthenticationAlreadyAuthenticatedError,
-  AuthenticationExpiredError,
-} from './errors.js';
-import type { AuthenticationRow } from '../database.schema.js';
+import { AuthenticationExpiredError } from './errors.js';
+import type { AuthenticationRow } from '../database/schema.js';
 
 export default class Authentication {
   private static readonly TEN_MINUTES_MILLISECONDS = 600_000;
@@ -73,7 +70,7 @@ export default class Authentication {
 
   authenticate(token: string, now: Date): void {
     if (this.token) {
-      throw new AuthenticationAlreadyAuthenticatedError();
+      throw new Error('Authentication already authenticated');
     }
 
     this.checkExpiration(now);

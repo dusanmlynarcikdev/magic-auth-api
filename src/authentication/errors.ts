@@ -1,18 +1,12 @@
-export abstract class AuthenticationError extends Error {}
+import { GoneException, NotFoundException } from '@nestjs/common';
 
-export class AuthenticationAlreadyAuthenticatedError extends AuthenticationError {
-  constructor() {
-    super('Authentication already authenticated');
-  }
-}
-
-export class AuthenticationExpiredError extends AuthenticationError {
+export class AuthenticationExpiredError extends GoneException {
   constructor() {
     super('Authentication expired');
   }
 }
 
-export class AuthenticationNotFoundError extends AuthenticationError {
+export class AuthenticationNotFoundError extends NotFoundException {
   constructor() {
     super('Authentication not found');
   }

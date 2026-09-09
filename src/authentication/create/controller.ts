@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import AuthenticationCreateUseCase from './create.use-case.js';
-import { AuthenticationCreateRequest } from './requests.js';
+import AuthenticationCreateUseCase from './use-case.js';
+import { AuthenticationCreateRequest } from '../requests.js';
 
 @Controller('authentications')
 export default class AuthenticationCreateController {
@@ -9,7 +9,7 @@ export default class AuthenticationCreateController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() request: AuthenticationCreateRequest) {
-    const magicToken = await this.createUseCase.create(request.userExternalId);
+    const magicToken = await this.createUseCase.execute(request.userExternalId);
 
     return { magicToken };
   }
