@@ -34,15 +34,15 @@ describe('AuthenticationRepository', () => {
       expectNotFound(repository.getByMagicToken('magic-token-1')));
   });
 
-  describe('getByToken', () => {
+  describe('findOneByToken', () => {
     it('another token', async () => {
       await repository.add(AuthenticationFactory.authenticated());
 
-      await expectNotFound(repository.getByToken('token-2'));
+      await expect(repository.findOneByToken('token-2')).resolves.toBeNull();
     });
 
     it('empty database', () =>
-      expectNotFound(repository.getByToken('token-1')));
+      expect(repository.findOneByToken('token-1')).resolves.toBeNull());
   });
 
   describe('findUnexpiredWithTokenByUserExternalId', () => {

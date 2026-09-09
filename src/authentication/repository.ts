@@ -19,8 +19,8 @@ export default class AuthenticationRepository {
     return this.getBy(eq(authentications.magicToken, magicToken));
   }
 
-  async getByToken(token: string): Promise<Authentication> {
-    return this.getBy(eq(authentications.token, token));
+  async findOneByToken(token: string): Promise<Authentication | null> {
+    return this.findOneBy(eq(authentications.token, token));
   }
 
   async findUnexpiredWithTokenByUserExternalId(
@@ -60,12 +60,18 @@ export default class AuthenticationRepository {
   }
 
   private async getBy(where: SQL): Promise<Authentication> {
-    const [row] = await db.select().from(authentications).where(where);
+    const authentication = await this.findOneBy(where);
 
-    if (!row) {
+    if (!authentication) {
       throw new AuthenticationNotFoundError();
     }
 
-    return Authentication.fromRow(row);
+    return authentication;
+  }
+
+  private async findOneBy(where: SQL): Promise<Authentication | null> {
+    const [row] = await db.select().from(authentications).where(where);
+
+    return row ? Authentication.fromRow(row) : null;
   }
 }
