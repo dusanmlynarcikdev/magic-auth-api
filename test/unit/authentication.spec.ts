@@ -1,8 +1,5 @@
 import Authentication from '../../src/authentication/entity.js';
-import {
-  AuthenticationAlreadyAuthenticatedError,
-  AuthenticationExpiredError,
-} from '../../src/authentication/errors.js';
+import { AuthenticationExpiredError } from '../../src/authentication/errors.js';
 import type { AuthenticationRow } from '../../src/database.schema.js';
 import AuthenticationFactory from '../support/authentication.factory.js';
 
@@ -41,7 +38,7 @@ describe('Authentication', () => {
       authentication.authenticate(token, now);
 
       expect(() => authentication.authenticate(token, now)).toThrow(
-        AuthenticationAlreadyAuthenticatedError,
+        'Authentication already authenticated',
       );
     });
 
