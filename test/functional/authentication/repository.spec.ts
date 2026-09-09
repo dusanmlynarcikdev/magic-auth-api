@@ -27,7 +27,7 @@ describe('AuthenticationRepository', () => {
     it('another token', async () => {
       await repository.add(AuthenticationFactory.create());
 
-      await expectNotFound(repository.getByMagicToken('magic-token-1'));
+      await expectNotFound(repository.getByMagicToken('magic-token-2'));
     });
 
     it('empty database', () =>
@@ -38,7 +38,7 @@ describe('AuthenticationRepository', () => {
     it('another token', async () => {
       await repository.add(AuthenticationFactory.authenticated());
 
-      await expectNotFound(repository.getByToken('token-1'));
+      await expectNotFound(repository.getByToken('token-2'));
     });
 
     it('empty database', () =>
@@ -48,7 +48,7 @@ describe('AuthenticationRepository', () => {
   describe('findUnexpiredWithTokenByUserExternalId', () => {
     it('newest first', async () => {
       const first = AuthenticationFactory.authenticated();
-      const second = AuthenticationFactory.authenticated();
+      const second = AuthenticationFactory.authenticated('token-2');
       await repository.add(first);
       await repository.add(second);
 
@@ -96,7 +96,7 @@ describe('AuthenticationRepository', () => {
 
   it('remove:another authentication is not deleted', async () => {
     const authentication1 = AuthenticationFactory.create();
-    const authentication2 = AuthenticationFactory.create();
+    const authentication2 = AuthenticationFactory.create('magic-token-2');
     await repository.add(authentication1);
     await repository.add(authentication2);
 
@@ -120,11 +120,11 @@ describe('AuthenticationRepository', () => {
 
   it('update:another authentication is not updated', async () => {
     const authentication1 = AuthenticationFactory.create();
-    const authentication2 = AuthenticationFactory.create();
+    const authentication2 = AuthenticationFactory.create('magic-token-2');
     await repository.add(authentication1);
     await repository.add(authentication2);
 
-    authentication1.authenticate(now);
+    authentication1.authenticate('token-1', now);
 
     await repository.update(authentication1);
 
