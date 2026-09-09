@@ -16,17 +16,13 @@ describe('AuthenticationGetMeController', () => {
   afterEach(() => app.close());
 
   it('get me', async () => {
-    const repository = new AuthenticationRepository();
-    const tokenProvider = new TokenProvider();
-
-    const token = tokenProvider.generate();
-    await repository.add(
-      AuthenticationFactory.authenticated(tokenProvider.hash(token)),
+    await new AuthenticationRepository().add(
+      AuthenticationFactory.authenticated(new TokenProvider().hash('token-1')),
     );
 
     const response = await request(app.getHttpServer())
       .get('/authentications/me')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', 'Bearer token-1')
       .expect(HttpStatus.OK);
 
     expect(response.body).toStrictEqual({ userExternalId: 'user-1' });

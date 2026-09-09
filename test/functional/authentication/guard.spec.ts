@@ -1,63 +1,56 @@
 import { UnauthorizedException, type ExecutionContext } from '@nestjs/common';
-import Authentication from '../../../src/authentication/entity.js';
-import { AuthenticationExpiredError } from '../../../src/authentication/errors.js';
 import AuthenticationGuard, {
   type AuthenticatedRequest,
 } from '../../../src/authentication/guard.js';
 import AuthenticationRepository from '../../../src/authentication/repository.js';
 import AuthenticationFactory from '../../support/authentication/factory.js';
-import ClockProvider from '../../../src/clock.provider.js';
+import type ClockProvider from '../../../src/clock.provider.js';
 import TokenProvider from '../../../src/token.provider.js';
 
 describe('AuthenticationGuard', () => {
+  const clockProvider = {
+    now: () => AuthenticationFactory.NOW,
+  } satisfies ClockProvider;
   const repository = new AuthenticationRepository();
   const tokenProvider = new TokenProvider();
+  const guard = new AuthenticationGuard(
+    repository,
+    clockProvider,
+    tokenProvider,
+  );
 
-  const createGuard = (now: Date = AuthenticationFactory.NOW) =>
-    new AuthenticationGuard(
-      repository,
-      { now: () => now } satisfies ClockProvider,
-      tokenProvider,
-    );
-
-  const createContext = (authorization?: string) => {
-    const request = {
-      headers: authorization ? { authorization } : {},
-    } as AuthenticatedRequest;
-
-    return {
-      request,
-      context: {
-        switchToHttp: () => ({ getRequest: () => request }),
-      } as unknown as ExecutionContext,
-    };
-  };
-
-  const addAuthenticated = async (): Promise<[string, Authentication]> => {
-    const token = tokenProvider.generate();
+  it.each(['Bearer', 'bearer'])('authenticated scheme: %s', async (scheme) => {
     const authentication = AuthenticationFactory.authenticated(
-      tokenProvider.hash(token),
+      tokenProvider.hash('token-1'),
     );
     await repository.add(authentication);
+    const context = createContext(`${scheme} token-1`);
 
-    return [token, authentication];
-  };
+    await expect(guard.canActivate(context)).resolves.toBe(true);
 
-  const expectUnauthorized = async (
-    promise: Promise<boolean>,
-    message: string,
-  ) => {
-    await expect(promise).rejects.toThrow(UnauthorizedException);
-    await expect(promise).rejects.toThrow(message);
-  };
-
-  it.each(['Bearer', 'bearer'])('authenticated:scheme %s', async (scheme) => {
-    const [token, authentication] = await addAuthenticated();
-    const { context, request } = createContext(`${scheme} ${token}`);
-
-    await expect(createGuard().canActivate(context)).resolves.toBe(true);
-
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     expect(request.authentication.id).toBe(authentication.id);
+  });
+
+  it('authentication expired', async () => {
+    await repository.add(
+      AuthenticationFactory.authenticated(
+        tokenProvider.hash('token-1'),
+        new Date('2026-08-04T12:30:45.000Z'),
+      ),
+    );
+
+    await expectUnauthorized(
+      guard.canActivate(createContext('Bearer token-1')),
+    );
+  });
+
+  it('unknown token', async () => {
+    await repository.add(AuthenticationFactory.authenticated());
+
+    await expectUnauthorized(
+      guard.canActivate(createContext('Bearer token-2')),
+    );
   });
 
   it.each([
@@ -65,32 +58,26 @@ describe('AuthenticationGuard', () => {
     ['another scheme', 'Basic token-1'],
     ['scheme only', 'Bearer'],
     ['token only', 'token-1'],
-  ])('invalid Authorization header:%s', async (_name, authorization) => {
-    const { context } = createContext(authorization);
-
-    await expectUnauthorized(
-      createGuard().canActivate(context),
+  ])('invalid Authorization header: %s', (_name, authorization) =>
+    expectUnauthorized(
+      guard.canActivate(createContext(authorization)),
       'Missing or invalid Authorization header',
-    );
-  });
-
-  it('unknown token', async () => {
-    await addAuthenticated();
-    const { context } = createContext('Bearer token-2');
-
-    await expectUnauthorized(
-      createGuard().canActivate(context),
-      'Unauthorized',
-    );
-  });
-
-  it('authentication expired', async () => {
-    const [token] = await addAuthenticated();
-    const { context } = createContext(`Bearer ${token}`);
-    const guard = createGuard(new Date('2026-11-04T12:30:45.000Z'));
-
-    await expect(guard.canActivate(context)).rejects.toThrow(
-      AuthenticationExpiredError,
-    );
-  });
+    ),
+  );
 });
+
+const createContext = (authorization?: string): ExecutionContext => {
+  const request = { headers: { authorization } };
+
+  return {
+    switchToHttp: () => ({ getRequest: () => request }),
+  } as ExecutionContext;
+};
+
+const expectUnauthorized = async (
+  promise: Promise<boolean>,
+  message: string = 'Unauthorized',
+) => {
+  await expect(promise).rejects.toThrow(UnauthorizedException);
+  await expect(promise).rejects.toThrow(message);
+};

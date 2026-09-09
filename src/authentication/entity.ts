@@ -73,7 +73,9 @@ export default class Authentication {
       throw new Error('Authentication already authenticated');
     }
 
-    this.checkExpiration(now);
+    if (this.isExpired(now)) {
+      throw new AuthenticationExpiredError();
+    }
 
     this._magicToken = null;
     this._token = token;
@@ -84,10 +86,8 @@ export default class Authentication {
     );
   }
 
-  checkExpiration(now: Date): void {
-    if (now > this.expiresAt) {
-      throw new AuthenticationExpiredError();
-    }
+  isExpired(now: Date): boolean {
+    return now > this.expiresAt;
   }
 
   private static createExpiresAt(

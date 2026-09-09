@@ -20,15 +20,14 @@ describe('AuthenticationAuthenticateController', () => {
     const repository = new AuthenticationRepository();
     const tokenProvider = new TokenProvider();
 
-    const magicToken = tokenProvider.generate();
     const authentication = AuthenticationFactory.create(
-      tokenProvider.hash(magicToken),
+      tokenProvider.hash('magic-token-1'),
     );
     await repository.add(authentication);
 
     const response = await request(app.getHttpServer())
       .post('/authentications/authenticate')
-      .send({ magicToken })
+      .send({ magicToken: 'magic-token-1' })
       .expect(HttpStatus.OK);
 
     expect(response.body).toStrictEqual({

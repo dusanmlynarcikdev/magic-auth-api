@@ -3,7 +3,7 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { createApplication } from '../support/application.js';
 
-const paths: ['get' | 'post', string][] = [['get', '/authentications/me']];
+const paths: ['get', string][] = [['get', '/authentications/me']];
 
 describe('unauthorized', () => {
   let app: INestApplication<App>;
@@ -14,16 +14,12 @@ describe('unauthorized', () => {
 
   afterEach(() => app.close());
 
-  describe.each(paths)('%s %s', (method, path) => {
-    it('missing bearer token', () =>
-      request(app.getHttpServer())
+  it.each(paths)(
+    'without Authorization header: %s %s',
+    async (method, path) => {
+      await request(app.getHttpServer())
         [method](path)
-        .expect(HttpStatus.UNAUTHORIZED));
-
-    it('unknown token', () =>
-      request(app.getHttpServer())
-        [method](path)
-        .set('Authorization', 'Bearer token-1')
-        .expect(HttpStatus.UNAUTHORIZED));
-  });
+        .expect(HttpStatus.UNAUTHORIZED);
+    },
+  );
 });

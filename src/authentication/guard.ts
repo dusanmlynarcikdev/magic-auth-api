@@ -5,7 +5,7 @@ import {
   type ExecutionContext,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import Authentication from './entity.js';
+import type Authentication from './entity.js';
 import AuthenticationRepository from './repository.js';
 import ClockProvider from '../clock.provider.js';
 import TokenProvider from '../token.provider.js';
@@ -23,20 +23,18 @@ export default class AuthenticationGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const request = context.switchToHttp().getRequest<Request>();
     const token = AuthenticationGuard.extractToken(request);
 
     const authentication = await this.authenticationRepository.findOneByToken(
       this.tokenProvider.hash(token),
     );
 
-    if (!authentication) {
+    if (!authentication || authentication.isExpired(this.clockProvider.now())) {
       throw new UnauthorizedException();
     }
 
-    authentication.checkExpiration(this.clockProvider.now());
-
-    request.authentication = authentication;
+    (request as AuthenticatedRequest).authentication = authentication;
 
     return true;
   }
