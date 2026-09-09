@@ -3,11 +3,11 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import AuthenticationRepository from '../../../src/authentication/repository.js';
 import { createApplication } from '../../support/application.js';
-import AuthenticationFactory from '../../support/authentication.factory.js';
-import AuthenticationQuery from '../../support/authentication.query.js';
+import AuthenticationFactory from '../../support/authentication/factory.js';
+import AuthenticationQuery from '../../support/authentication/query.js';
 import TokenProvider from '../../../src/token.provider.js';
 
-describe('AuthenticateController', () => {
+describe('AuthenticationAuthenticateController', () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -16,7 +16,7 @@ describe('AuthenticateController', () => {
 
   afterEach(() => app.close());
 
-  it('create', async () => {
+  it('authenticate', async () => {
     const repository = new AuthenticationRepository();
     const tokenProvider = new TokenProvider();
 

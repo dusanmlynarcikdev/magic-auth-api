@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class AuthenticateRequest {
+export class AuthenticationAuthenticateRequest {
   @IsString()
   @IsNotEmpty()
   readonly magicToken!: string;

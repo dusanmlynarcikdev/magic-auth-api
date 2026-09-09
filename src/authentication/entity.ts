@@ -1,6 +1,6 @@
 import { v7 as uuid7 } from 'uuid';
 import { AuthenticationExpiredError } from './errors.js';
-import type { AuthenticationRow } from '../database.schema.js';
+import type { AuthenticationRow } from '../database/schema.js';
 
 export default class Authentication {
   private static readonly TEN_MINUTES_MILLISECONDS = 600_000;

@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { App } from 'supertest/types.js';
 import { AppModule } from '../../src/app.module.js';
 import ClockProvider from '../../src/clock.provider.js';
-import AuthenticationFactory from './authentication.factory.js';
+import AuthenticationFactory from './authentication/factory.js';
 
 export async function createApplication(
   now: Date = AuthenticationFactory.NOW,
