@@ -41,7 +41,7 @@ describe('AuthenticationAuthenticateController', () => {
       id: authentication.id,
       userExternalId: 'user-1',
       magicToken: null,
-      token: new TokenProvider().hash(response.body.token),
+      token: tokenProvider.hash(response.body.token),
       authenticatedAt: new Date('2026-09-04T12:30:45.000Z'),
       expiresAt: new Date('2026-10-04T12:30:45.000Z'),
     });
