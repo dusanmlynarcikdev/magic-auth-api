@@ -3,7 +3,7 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { createApplication } from '../support/application.js';
 
-describe('AppController (e2e)', () => {
+describe('HealthController', () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -12,10 +12,6 @@ describe('AppController (e2e)', () => {
 
   afterEach(() => app.close());
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(HttpStatus.OK)
-      .expect('Hello World!');
-  });
+  it('check', () =>
+    request(app.getHttpServer()).get('/health').expect(HttpStatus.NO_CONTENT));
 });
