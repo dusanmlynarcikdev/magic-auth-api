@@ -3,7 +3,10 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { createApplication } from '../support/application.js';
 
-const paths: ['get', string][] = [['get', '/authentications/me']];
+const paths: ['get' | 'delete', string][] = [
+  ['get', '/authentications/me'],
+  ['delete', '/authentications/me'],
+];
 
 describe('unauthorized', () => {
   let app: INestApplication<App>;
