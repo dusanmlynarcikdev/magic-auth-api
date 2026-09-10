@@ -7,6 +7,7 @@ import AuthenticationDeleteMeController from './me/delete.controller.js';
 import AuthenticationDeleteMeUseCase from './me/delete.use-case.js';
 import AuthenticationGetMeController from './me/get.controller.js';
 import AuthenticationGuard from './guard.js';
+import AuthenticationListController from './list.controller.js';
 import AuthenticationRepository from './repository.js';
 import ClockProvider from '../clock.provider.js';
 import TokenProvider from '../token.provider.js';
@@ -17,6 +18,7 @@ import TokenProvider from '../token.provider.js';
     AuthenticationCreateController,
     AuthenticationDeleteMeController,
     AuthenticationGetMeController,
+    AuthenticationListController,
   ],
   providers: [
     AuthenticationAuthenticateUseCase,

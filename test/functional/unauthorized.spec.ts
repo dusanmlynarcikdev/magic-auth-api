@@ -4,6 +4,7 @@ import { App } from 'supertest/types.js';
 import { createApplication } from '../support/application.js';
 
 const paths: ['get' | 'delete', string][] = [
+  ['get', '/authentications'],
   ['get', '/authentications/me'],
   ['delete', '/authentications/me'],
 ];
