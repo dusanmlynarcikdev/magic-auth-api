@@ -54,13 +54,13 @@ describe('Authentication', () => {
     });
   });
 
-  describe('checkExpiration', () => {
+  describe('isExpired', () => {
     it('expired', () => {
       const authentication = AuthenticationFactory.create();
 
-      expect(() =>
-        authentication.checkExpiration(new Date('2026-09-04T12:40:45.001Z')),
-      ).toThrow(AuthenticationExpiredError);
+      expect(
+        authentication.isExpired(new Date('2026-09-04T12:40:45.001Z')),
+      ).toBe(true);
     });
 
     it.each([
@@ -69,7 +69,7 @@ describe('Authentication', () => {
     ])('unexpired at %s', (now) => {
       const authentication = AuthenticationFactory.create();
 
-      expect(() => authentication.checkExpiration(now)).not.toThrow();
+      expect(authentication.isExpired(now)).toBe(false);
     });
   });
 
