@@ -46,6 +46,23 @@ describe('AuthenticationRepository', () => {
   });
 
   describe('findUnexpiredWithTokenByUserExternalId', () => {
+    it('found', async () => {
+      const authentication = AuthenticationFactory.authenticated();
+      await repository.add(authentication);
+
+      const result = await repository.findUnexpiredWithTokenByUserExternalId(
+        'user-1',
+        AuthenticationFactory.NOW,
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toStrictEqual({
+        id: authentication.id,
+        authenticatedAt: new Date('2026-09-04T12:30:45.000Z'),
+        expiresAt: new Date('2026-10-04T12:30:45.000Z'),
+      });
+    });
+
     it('newest first', async () => {
       const first = AuthenticationFactory.authenticated();
       const second = AuthenticationFactory.authenticated('token-2');

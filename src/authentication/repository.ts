@@ -1,7 +1,8 @@
-import { and, desc, eq, gte, lt, isNotNull, type SQL } from 'drizzle-orm';
+import { and, desc, eq, gte, lt, isNotNull, sql, type SQL } from 'drizzle-orm';
 import { Injectable } from '@nestjs/common';
 import Authentication from './entity.js';
 import { AuthenticationNotFoundError } from './errors.js';
+import type { AuthenticationDto } from './dtos.js';
 import { db } from '../database/client.js';
 import { authentications } from '../database/schema.js';
 
@@ -26,9 +27,15 @@ export default class AuthenticationRepository {
   async findUnexpiredWithTokenByUserExternalId(
     userExternalId: string,
     now: Date,
-  ): Promise<Authentication[]> {
-    const rows = await db
-      .select()
+  ): Promise<AuthenticationDto[]> {
+    return db
+      .select({
+        id: authentications.id,
+        authenticatedAt: sql`${authentications.authenticatedAt}`.mapWith(
+          authentications.authenticatedAt,
+        ),
+        expiresAt: authentications.expiresAt,
+      })
       .from(authentications)
       .where(
         and(
@@ -38,8 +45,6 @@ export default class AuthenticationRepository {
         ),
       )
       .orderBy(desc(authentications.id));
-
-    return rows.map((row) => Authentication.fromRow(row));
   }
 
   async remove(authentication: Authentication): Promise<void> {
