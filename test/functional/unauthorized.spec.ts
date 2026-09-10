@@ -7,6 +7,7 @@ const paths: ['get' | 'delete', string][] = [
   ['get', '/authentications'],
   ['get', '/authentications/me'],
   ['delete', '/authentications/me'],
+  ['delete', '/authentications/00000000-0000-0000-0000-000000000000'],
 ];
 
 describe('unauthorized', () => {
