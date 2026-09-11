@@ -1,0 +1,37 @@
+# Docker
+.docker
+.dockerignore
+Dockerfile
+docker-compose*.yaml
+
+# CI
+.github
+
+# Git
+.git
+.gitignore
+
+# IDEs and editors
+.idea
+
+# Dependencies
+node_modules
+
+# Compiled output
+dist
+*.tsbuildinfo
+
+# Tests
+coverage
+
+# Environment
+.env*
+
+# Docs
+README.md
+
+# Logs
+*.log
+
+# OS
+.DS_Store
