@@ -1,14 +1,16 @@
-name: magic-auth
+name: magic-auth-api
 
 services:
   api:
     build:
       context: .
       target: app
-    command: npm run start:dev
-    container_name: api
+    command: 'sh -c "[ -d node_modules ] || npm ci; npm run start:dev"'
+    container_name: magic-auth-api
+    depends_on:
+      - database
     ports:
-      - '88:3000'
+      - '8082:3000'
     restart: always
     volumes:
       - ./:/app
@@ -18,7 +20,7 @@ services:
       POSTGRES_PASSWORD: postgres
     image: postgres:18.3
     ports:
-      - '5432:5432'
+      - '54322:5432'
     restart: always
     volumes:
       - ./.docker/postgres:/var/lib/postgresql

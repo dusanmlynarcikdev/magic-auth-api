@@ -1,10 +1,13 @@
-name: magic-auth
+name: magic-auth-api
 
 services:
   api:
-    build: .
     command: npm run start:prod
-    container_name: api
+    container_name: magic-auth-api
+    environment:
+      DATABASE_URL: ${DATABASE_URL?required}
+    image: ghcr.io/dusanmlynarcikdev/magic-auth-api:${API_VERSION:-latest}
     ports:
-      - '88:3000'
+      - '${API_PORT:-8082}:3000'
+    pull_policy: always
     restart: always

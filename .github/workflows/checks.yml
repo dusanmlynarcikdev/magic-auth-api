@@ -36,7 +36,7 @@ jobs:
           grep -q no_changes /tmp/db-check
 
       - name: Tests
-        run: docker run --network network api npm run test:cov
+        run: docker run --network network -e DATABASE_URL api npm run test:cov
 
       - name: Lint
         run: docker run api npm run lint

@@ -41,4 +41,6 @@ RUN npm run build
 FROM base AS production
 
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/drizzle ./drizzle
+COPY --from=build /app/drizzle.config.ts ./
 COPY --from=production-dependencies /app/node_modules ./node_modules
