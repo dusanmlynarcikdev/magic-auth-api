@@ -1,10 +1,11 @@
-import { and, desc, eq, gte, lt, isNotNull, sql, type SQL } from 'drizzle-orm';
 import { Injectable } from '@nestjs/common';
-import Authentication from './entity.js';
-import { AuthenticationNotFoundError } from './errors.js';
-import type { AuthenticationDto } from './dtos.js';
+import { type SQL, and, desc, eq, gte, isNotNull, lt, sql } from 'drizzle-orm';
+
 import { db } from '../database/client.js';
 import { authentications } from '../database/schema.js';
+import type { AuthenticationDto } from './dtos.js';
+import Authentication from './entity.js';
+import { AuthenticationNotFoundError } from './errors.js';
 
 @Injectable()
 export default class AuthenticationRepository {

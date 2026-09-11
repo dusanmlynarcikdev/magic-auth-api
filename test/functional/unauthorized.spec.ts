@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
+
 import { createApplication } from '../support/application.js';
 
 const paths: ['get' | 'delete', string][] = [

@@ -1,4 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
+
 import { Auth } from '../decorators.js';
 import Authentication from '../entity.js';
 import AuthenticationGuard from '../guard.js';

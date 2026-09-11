@@ -1,7 +1,7 @@
 import { db } from '../../../src/database/client.js';
 import {
-  authentications,
   type AuthenticationRow,
+  authentications,
 } from '../../../src/database/schema.js';
 
 export default class AuthenticationQuery {

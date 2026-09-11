@@ -1,11 +1,12 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
+
 import AuthenticationRepository from '../../../../src/authentication/repository.js';
+import TokenProvider from '../../../../src/token.provider.js';
 import { createApplication } from '../../../support/application.js';
 import AuthenticationFactory from '../../../support/authentication/factory.js';
 import AuthenticationQuery from '../../../support/authentication/query.js';
-import TokenProvider from '../../../../src/token.provider.js';
 
 describe('AuthenticationDeleteController', () => {
   let app: INestApplication<App>;

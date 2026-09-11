@@ -1,7 +1,7 @@
 import AuthenticationDeleteUseCase from '../../../../src/authentication/delete/use-case.js';
-import AuthenticationFactory from '../../../support/authentication/factory.js';
-import AuthenticationRepository from '../../../../src/authentication/repository.js';
 import { AuthenticationNotFoundError } from '../../../../src/authentication/errors.js';
+import AuthenticationRepository from '../../../../src/authentication/repository.js';
+import AuthenticationFactory from '../../../support/authentication/factory.js';
 
 describe('AuthenticationDeleteUseCase', () => {
   const repository = new AuthenticationRepository();

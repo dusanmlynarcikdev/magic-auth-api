@@ -7,10 +7,11 @@ import {
   ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
-import AuthenticationDeleteUseCase from './use-case.js';
+
 import { Auth } from '../decorators.js';
 import Authentication from '../entity.js';
 import AuthenticationGuard from '../guard.js';
+import AuthenticationDeleteUseCase from './use-case.js';
 
 @Controller('authentications')
 @UseGuards(AuthenticationGuard)

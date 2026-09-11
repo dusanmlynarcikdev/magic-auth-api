@@ -1,5 +1,6 @@
-import { createHash, randomBytes } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
+
+import { createHash, randomBytes } from 'node:crypto';
 
 @Injectable()
 export default class TokenProvider {

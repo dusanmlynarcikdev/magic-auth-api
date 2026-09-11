@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import ClockProvider from '../../../clock.provider.js';
 import AuthenticationRepository from '../../repository.js';
 
