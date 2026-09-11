@@ -1,4 +1,9 @@
 {
+  "importTypeOrder": ["NPMPackages", "localImports"],
+  "newlineBetweenTypes": true,
+  "plugins": ["prettier-plugin-sort-imports"],
   "singleQuote": true,
+  "sortingMethod": "alphabetical",
+  "stripNewlines": true,
   "trailingComma": "all"
 }

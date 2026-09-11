@@ -1,10 +1,11 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
+
+import ClockProvider from '../clock.provider.js';
 import { Auth } from './decorators.js';
+import type { AuthenticationDto } from './dtos.js';
 import Authentication from './entity.js';
 import AuthenticationGuard from './guard.js';
 import AuthenticationRepository from './repository.js';
-import type { AuthenticationDto } from './dtos.js';
-import ClockProvider from '../clock.provider.js';
 
 @Controller('authentications')
 @UseGuards(AuthenticationGuard)

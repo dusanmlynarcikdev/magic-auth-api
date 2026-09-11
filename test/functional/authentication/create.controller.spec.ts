@@ -1,9 +1,10 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
+
+import TokenProvider from '../../../src/token.provider.js';
 import { createApplication } from '../../support/application.js';
 import AuthenticationQuery from '../../support/authentication/query.js';
-import TokenProvider from '../../../src/token.provider.js';
 
 describe('AuthenticationCreateController', () => {
   let app: INestApplication<App>;

@@ -1,4 +1,5 @@
-import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
+import { type ExecutionContext, createParamDecorator } from '@nestjs/common';
+
 import type Authentication from './entity.js';
 import type { AuthenticatedRequest } from './guard.js';
 

@@ -1,14 +1,15 @@
 import {
-  Injectable,
-  UnauthorizedException,
   type CanActivate,
   type ExecutionContext,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
-import type { Request } from 'express';
-import type Authentication from './entity.js';
-import AuthenticationRepository from './repository.js';
+
 import ClockProvider from '../clock.provider.js';
 import TokenProvider from '../token.provider.js';
+import type Authentication from './entity.js';
+import AuthenticationRepository from './repository.js';
+import type { Request } from 'express';
 
 export interface AuthenticatedRequest extends Request {
   authentication: Authentication;

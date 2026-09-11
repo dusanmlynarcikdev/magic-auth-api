@@ -1,9 +1,9 @@
 import AuthenticationDeleteExpiredTask from '../../../../src/authentication/delete/expired/task.js';
 import AuthenticationDeleteExpiredUseCase from '../../../../src/authentication/delete/expired/use-case.js';
-import AuthenticationFactory from '../../../support/authentication/factory.js';
-import AuthenticationQuery from '../../../support/authentication/query.js';
 import AuthenticationRepository from '../../../../src/authentication/repository.js';
 import ClockProvider from '../../../../src/clock.provider.js';
+import AuthenticationFactory from '../../../support/authentication/factory.js';
+import AuthenticationQuery from '../../../support/authentication/query.js';
 
 describe('AuthenticationDeleteExpiredTask', () => {
   const repository = new AuthenticationRepository();

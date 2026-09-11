@@ -5,10 +5,11 @@ import {
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
+
 import { Auth } from '../decorators.js';
 import Authentication from '../entity.js';
-import AuthenticationDeleteMeUseCase from './delete.use-case.js';
 import AuthenticationGuard from '../guard.js';
+import AuthenticationDeleteMeUseCase from './delete.use-case.js';
 
 @Controller('authentications')
 @UseGuards(AuthenticationGuard)

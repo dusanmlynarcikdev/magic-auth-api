@@ -1,11 +1,12 @@
-import { UnauthorizedException, type ExecutionContext } from '@nestjs/common';
+import { type ExecutionContext, UnauthorizedException } from '@nestjs/common';
+
 import AuthenticationGuard, {
   type AuthenticatedRequest,
 } from '../../../src/authentication/guard.js';
 import AuthenticationRepository from '../../../src/authentication/repository.js';
-import AuthenticationFactory from '../../support/authentication/factory.js';
 import type ClockProvider from '../../../src/clock.provider.js';
 import TokenProvider from '../../../src/token.provider.js';
+import AuthenticationFactory from '../../support/authentication/factory.js';
 
 describe('AuthenticationGuard', () => {
   const clockProvider = {

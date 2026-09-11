@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { AuthenticationNotFoundError } from '../errors.js';
 import AuthenticationRepository from '../repository.js';
 
