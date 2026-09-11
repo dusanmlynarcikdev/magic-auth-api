@@ -7,7 +7,7 @@
 
 ## How It Works
 
-Magic Auth API is a standalone microservice. 
+Magic Auth API is a standalone microservice.
 It runs alongside your backend, which communicates with it via a REST API.
 It never talks to your users directly.
 
@@ -130,6 +130,10 @@ sequenceDiagram
     API-->>Backend: { token }
     Backend->>User: Stores the session token
 ```
+
+> To check whether the user is signed in, call `GET /authentications/me`
+> with the session token — it returns the current authentication, or `401`
+> when the token is invalid or expired.
 
 ---
 
