@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class AuthenticationAuthenticateRequest {
   @IsString()
@@ -10,4 +10,11 @@ export class AuthenticationCreateRequest {
   @IsString()
   @IsNotEmpty()
   readonly userExternalId!: string;
+
+  @IsOptional()
+  @IsUrl({
+    protocols: ['https'],
+    require_host: false,
+  })
+  readonly successUrl?: string | null;
 }

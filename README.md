@@ -49,7 +49,7 @@ See the [Integration Flow](#-integration-flow) for how the user sign-in flow wor
    curl -fsSL -o .env https://raw.githubusercontent.com/dusanmlynarcikdev/magic-auth-api/main/.env.example
    ```
 
-2. Point `DATABASE_URL` in `.env` to your PostgreSQL database
+2. Set the variables in `.env` to your production values
 
 3. Run the migrations and start the published image:
 
@@ -60,11 +60,12 @@ See the [Integration Flow](#-integration-flow) for how the user sign-in flow wor
 
 #### Docker Compose Variables
 
-| Variable       | Default  | Description                                      |
-| -------------- | -------- | ------------------------------------------------ |
-| `DATABASE_URL` | required | PostgreSQL connection string, loaded from `.env` |
-| `API_VERSION`  | `latest` | Tag of the published Docker image                |
-| `API_PORT`     | `8082`   | Port published on the host                       |
+| Variable                 | Default  | Description                                                          |
+| ------------------------ | -------- | -------------------------------------------------------------------- |
+| `AUTHENTICATE_ERROR_URL` | `/`      | Where the authenticate page redirects when the magic link is invalid |
+| `DATABASE_URL`           | required | PostgreSQL connection string                                         |
+| `API_VERSION`            | `latest` | Tag of the published Docker image                                    |
+| `API_PORT`               | `8082`   | Port published on the host                                           |
 
 ### Local
 
@@ -128,12 +129,53 @@ sequenceDiagram
     User->>Backend: Opens the magic link
     Backend->>API: POST /authentications/authenticate<br/>{ magicToken }
     API-->>Backend: { token }
-    Backend->>User: Stores the session token
+    Backend-->>User: Stores the session token
 ```
+
+> Your backend doesn't have to implement the authentication logic (steps 5–8) —
+> see the [Authenticate Page](#-authenticate-page).
 
 > To check whether the user is signed in, call `GET /authentications/me`
 > with the session token — it returns the current authentication, or `401`
 > when the token is invalid or expired.
+
+## 🔗 Authenticate Page
+
+An optional, ready-to-use page that replaces the magic link handling in your
+backend. Expose `GET /authenticate?magicToken=<token>` publicly on
+your domain and point the magic link to it.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Backend as Your Backend
+    participant API as Magic Auth API
+
+    User->>Backend: Signs in with an email
+    Backend->>API: POST /authentications<br/>{ userExternalId, successUrl }
+    API-->>Backend: { magicToken }
+    Backend->>User: Sends the magic link
+    User->>API: Opens the magic link#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;
+    API-->>User: #8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;#8195;Authenticates and redirects
+```
+
+### Successful Sign-in
+
+The page stores the session token in the `auth_token` cookie and redirects the
+user to the `successUrl`.
+
+The cookie is:
+
+- `Secure` and `SameSite=Lax`
+- Readable by both your server and JavaScript
+
+### Invalid or Expired Link
+
+The page stores nothing and redirects the user to the `AUTHENTICATE_ERROR_URL`.
+
+> Both URLs are optional and default to `/`. They can be a path
+> or an absolute URL with the `https` scheme.
 
 ---
 

@@ -5,6 +5,7 @@ services:
     command: npm run start:prod
     container_name: magic-auth-api
     environment:
+      AUTHENTICATE_ERROR_URL: ${AUTHENTICATE_ERROR_URL:-}
       DATABASE_URL: ${DATABASE_URL?required}
     image: ghcr.io/dusanmlynarcikdev/magic-auth-api:${API_VERSION:-latest}
     ports:

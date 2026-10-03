@@ -17,7 +17,8 @@ export default class AuthenticationFactory {
   static create(
     magicToken: string = 'magic-token-1',
     now: Date = AuthenticationFactory.NOW,
+    successUrl: string | null = null,
   ): Authentication {
-    return Authentication.create('user-1', magicToken, now);
+    return Authentication.create('user-1', magicToken, successUrl, now);
   }
 }

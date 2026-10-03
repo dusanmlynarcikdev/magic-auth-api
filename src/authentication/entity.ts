@@ -11,6 +11,7 @@ export default class Authentication {
     readonly id: string,
     readonly userExternalId: string,
     private _magicToken: string | null,
+    private _successUrl: string | null,
     private _token: string | null,
     private _authenticatedAt: Date | null,
     private _expiresAt: Date,
@@ -19,12 +20,14 @@ export default class Authentication {
   static create(
     userExternalId: string,
     magicToken: string,
+    successUrl: string | null,
     now: Date,
   ): Authentication {
     return new Authentication(
       uuid7(),
       userExternalId,
       magicToken,
+      successUrl,
       null,
       null,
       Authentication.createExpiresAt(now),
@@ -36,6 +39,7 @@ export default class Authentication {
       row.id,
       row.userExternalId,
       row.magicToken,
+      row.successUrl,
       row.token,
       row.authenticatedAt,
       row.expiresAt,
@@ -47,6 +51,7 @@ export default class Authentication {
       id: this.id,
       userExternalId: this.userExternalId,
       magicToken: this.magicToken,
+      successUrl: this.successUrl,
       token: this.token,
       authenticatedAt: this.authenticatedAt,
       expiresAt: this.expiresAt,
@@ -55,6 +60,10 @@ export default class Authentication {
 
   get magicToken(): string | null {
     return this._magicToken;
+  }
+
+  get successUrl(): string | null {
+    return this._successUrl;
   }
 
   get token(): string | null {
@@ -79,6 +88,7 @@ export default class Authentication {
     }
 
     this._magicToken = null;
+    this._successUrl = null;
     this._token = token;
     this._authenticatedAt = now;
     this._expiresAt = Authentication.createExpiresAt(

@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import ClockProvider from '../clock.provider.js';
 import TokenProvider from '../token.provider.js';
 import AuthenticationAuthenticateController from './authenticate/controller.js';
+import AuthenticationAuthenticatePage from './authenticate/page.js';
 import AuthenticationAuthenticateUseCase from './authenticate/use-case.js';
 import AuthenticationCreateController from './create/controller.js';
 import AuthenticationCreateUseCase from './create/use-case.js';
@@ -20,6 +21,7 @@ import AuthenticationRepository from './repository.js';
 @Module({
   controllers: [
     AuthenticationAuthenticateController,
+    AuthenticationAuthenticatePage,
     AuthenticationCreateController,
     AuthenticationDeleteMeController,
     AuthenticationDeleteController,
