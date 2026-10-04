@@ -32,8 +32,9 @@ See the [Integration Flow](#-integration-flow) for how the user sign-in flow wor
 - Issues magic tokens for your magic links
 - Exchanges magic tokens for session tokens
 - Returns information about the signed-in user
+- Extends the session expiration on every use
 - Identifies users by your own external IDs
-- Does not store user data
+- Deletes expired authentications automatically
 
 ---
 
@@ -106,7 +107,8 @@ Endpoints marked 🔒 require the session token in the
 | `DELETE` | `/authentications/me`           | 🔒 Deletes the current authentication (sign out)        |
 | `DELETE` | `/authentications/:id`          | 🔒 Deletes an authentication of the current user        |
 
-> The magic token is valid for 10 minutes, the session token for 30 days.
+> The magic token is valid for 10 minutes, the session token for 30 days,
+> extended on every use.
 > Expired authentications are deleted by a daily task.
 
 ## 🧵 Integration Flow

@@ -37,6 +37,7 @@ export default class AuthenticationGuard implements CanActivate {
     }
 
     authentication.updateLastUsedAt(now);
+    authentication.extendExpiresAt(now);
     await this.authenticationRepository.update(authentication);
 
     (request as AuthenticatedRequest).authentication = authentication;
