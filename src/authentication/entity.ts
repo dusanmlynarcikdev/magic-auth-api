@@ -118,10 +118,25 @@ export default class Authentication {
 
   updateLastUsedAt(now: Date): void {
     if (!this.lastUsedAt) {
-      throw new Error('Missing last used at');
+      throw new Error('Last used at is empty');
     }
 
     this._lastUsedAt = now;
+  }
+
+  extendExpiresAt(now: Date): void {
+    if (!this.token) {
+      throw new Error('Authentication not authenticated');
+    }
+
+    if (this.isExpired(now)) {
+      throw new Error('Authentication already expired');
+    }
+
+    this._expiresAt = Authentication.createExpiresAt(
+      now,
+      Authentication.THIRTY_DAYS_MILLISECONDS,
+    );
   }
 
   isExpired(now: Date): boolean {

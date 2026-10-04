@@ -76,12 +76,41 @@ describe('Authentication', () => {
       expect(authentication.lastUsedAt).toBe(now);
     });
 
-    it('missing last used at', () => {
+    it('last used at empty', () => {
       const authentication = AuthenticationFactory.create();
 
       expect(() => authentication.updateLastUsedAt(now)).toThrow(
-        'Missing last used at',
+        'Last used at is empty',
       );
+    });
+  });
+
+  describe('extendExpiresAt', () => {
+    it('success', () => {
+      const authentication = AuthenticationFactory.authenticated();
+      const now = new Date('2026-09-10T08:15:30.000Z');
+
+      authentication.extendExpiresAt(now);
+
+      expect(authentication.expiresAt).toStrictEqual(
+        new Date('2026-10-10T08:15:30.000Z'),
+      );
+    });
+
+    it('not authenticated', () => {
+      const authentication = AuthenticationFactory.create();
+
+      expect(() => authentication.extendExpiresAt(now)).toThrow(
+        'Authentication not authenticated',
+      );
+    });
+
+    it('expired', () => {
+      const authentication = AuthenticationFactory.authenticated();
+
+      expect(() =>
+        authentication.extendExpiresAt(new Date('2026-10-04T12:30:45.001Z')),
+      ).toThrow('Authentication already expired');
     });
   });
 
