@@ -19,10 +19,14 @@ describe('AuthenticationListController', () => {
   it('list', async () => {
     const tokenProvider = new TokenProvider();
     const repository = new AuthenticationRepository();
+
     const authentication = AuthenticationFactory.authenticated(
       tokenProvider.hash('token-1'),
     );
     await repository.add(authentication);
+
+    const authentication2 = AuthenticationFactory.authenticated();
+    await repository.add(authentication2);
 
     const response = await request(app.getHttpServer())
       .get('/authentications')
@@ -31,11 +35,17 @@ describe('AuthenticationListController', () => {
 
     expect(response.body).toStrictEqual([
       {
+        id: authentication2.id,
+        userAgent: 'user-agent-1',
+        authenticatedAt: '2026-09-04T12:30:45.000Z',
+        lastUsedAt: '2026-09-04T12:30:45.000Z',
+      },
+      {
         id: authentication.id,
         userAgent: 'user-agent-1',
         authenticatedAt: '2026-09-04T12:30:45.000Z',
         lastUsedAt: '2026-09-04T12:30:45.000Z',
-        expiresAt: '2026-10-04T12:30:45.000Z',
+        isCurrent: true,
       },
     ]);
   });
