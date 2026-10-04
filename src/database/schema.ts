@@ -14,6 +14,7 @@ export const authentications = snakeCase.table(
     magicToken: varchar().unique(),
     successUrl: varchar(),
     token: varchar().unique(),
+    userAgent: varchar(),
     authenticatedAt: timestamp({ withTimezone: true }),
     expiresAt: timestamp({ withTimezone: true }).notNull(),
   },

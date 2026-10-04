@@ -19,6 +19,7 @@ describe('Authentication', () => {
     expect(authentication.magicToken).toBe(token);
     expect(authentication.successUrl).toBe('/success');
     expect(authentication.token).toBeNull();
+    expect(authentication.userAgent).toBeNull();
     expect(authentication.authenticatedAt).toBeNull();
     expect(authentication.expiresAt).toStrictEqual(
       new Date('2026-09-04T12:40:45.000Z'),
@@ -29,11 +30,12 @@ describe('Authentication', () => {
     it('success', () => {
       const authentication = AuthenticationFactory.create();
 
-      authentication.authenticate(token, now);
+      authentication.authenticate(token, 'user-agent-1', now);
 
       expect(authentication.magicToken).toBeNull();
       expect(authentication.successUrl).toBeNull();
       expect(authentication.token).toBe(token);
+      expect(authentication.userAgent).toBe('user-agent-1');
       expect(authentication.authenticatedAt).toBe(now);
       expect(authentication.expiresAt).toStrictEqual(
         new Date('2026-10-04T12:30:45.000Z'),
@@ -42,9 +44,9 @@ describe('Authentication', () => {
 
     it('already authenticated', () => {
       const authentication = AuthenticationFactory.create();
-      authentication.authenticate(token, now);
+      authentication.authenticate(token, null, now);
 
-      expect(() => authentication.authenticate(token, now)).toThrow(
+      expect(() => authentication.authenticate(token, null, now)).toThrow(
         'Authentication already authenticated',
       );
     });
@@ -55,6 +57,7 @@ describe('Authentication', () => {
       expect(() =>
         authentication.authenticate(
           token,
+          null,
           new Date('2026-09-04T12:40:45.001Z'),
         ),
       ).toThrow(AuthenticationExpiredError);
@@ -94,6 +97,7 @@ describe('Authentication', () => {
         magicToken: authentication.magicToken,
         successUrl: authentication.successUrl,
         token: null,
+        userAgent: null,
         authenticatedAt: null,
         expiresAt: authentication.expiresAt,
       });
@@ -101,7 +105,7 @@ describe('Authentication', () => {
 
     it('authenticated', () => {
       const authentication = AuthenticationFactory.create();
-      authentication.authenticate('token-1', now);
+      authentication.authenticate('token-1', 'user-agent-1', now);
 
       expect(authentication.toRow()).toStrictEqual({
         id: authentication.id,
@@ -109,6 +113,7 @@ describe('Authentication', () => {
         magicToken: null,
         successUrl: null,
         token: authentication.token,
+        userAgent: authentication.userAgent,
         authenticatedAt: now,
         expiresAt: authentication.expiresAt,
       });
@@ -122,6 +127,7 @@ describe('Authentication', () => {
       magicToken: 'magic-token-1',
       successUrl: '/success',
       token: 'token-1',
+      userAgent: 'user-agent-1',
       authenticatedAt: now,
       expiresAt: new Date('2026-09-04T12:30:45.001Z'),
     };
@@ -133,6 +139,7 @@ describe('Authentication', () => {
     expect(authentication.magicToken).toBe(row.magicToken);
     expect(authentication.successUrl).toBe(row.successUrl);
     expect(authentication.token).toBe(row.token);
+    expect(authentication.userAgent).toBe(row.userAgent);
     expect(authentication.authenticatedAt).toBe(row.authenticatedAt);
     expect(authentication.expiresAt).toBe(row.expiresAt);
   });

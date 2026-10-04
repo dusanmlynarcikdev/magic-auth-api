@@ -13,6 +13,7 @@ export default class Authentication {
     private _magicToken: string | null,
     private _successUrl: string | null,
     private _token: string | null,
+    private _userAgent: string | null,
     private _authenticatedAt: Date | null,
     private _expiresAt: Date,
   ) {}
@@ -30,6 +31,7 @@ export default class Authentication {
       successUrl,
       null,
       null,
+      null,
       Authentication.createExpiresAt(now),
     );
   }
@@ -41,6 +43,7 @@ export default class Authentication {
       row.magicToken,
       row.successUrl,
       row.token,
+      row.userAgent,
       row.authenticatedAt,
       row.expiresAt,
     );
@@ -53,6 +56,7 @@ export default class Authentication {
       magicToken: this.magicToken,
       successUrl: this.successUrl,
       token: this.token,
+      userAgent: this.userAgent,
       authenticatedAt: this.authenticatedAt,
       expiresAt: this.expiresAt,
     };
@@ -70,6 +74,10 @@ export default class Authentication {
     return this._token;
   }
 
+  get userAgent(): string | null {
+    return this._userAgent;
+  }
+
   get authenticatedAt(): Date | null {
     return this._authenticatedAt;
   }
@@ -78,7 +86,7 @@ export default class Authentication {
     return this._expiresAt;
   }
 
-  authenticate(token: string, now: Date): void {
+  authenticate(token: string, userAgent: string | null, now: Date): void {
     if (this.token) {
       throw new Error('Authentication already authenticated');
     }
@@ -90,6 +98,7 @@ export default class Authentication {
     this._magicToken = null;
     this._successUrl = null;
     this._token = token;
+    this._userAgent = userAgent;
     this._authenticatedAt = now;
     this._expiresAt = Authentication.createExpiresAt(
       now,

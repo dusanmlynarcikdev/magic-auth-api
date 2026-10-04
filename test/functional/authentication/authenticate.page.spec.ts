@@ -29,6 +29,7 @@ describe('AuthenticationAuthenticatePage', () => {
 
     const response = await request(app.getHttpServer())
       .get('/authenticate?magicToken=magic-token-1')
+      .set('User-Agent', 'user-agent-1')
       .expect(HttpStatus.FOUND)
       .expect('Location', '/success');
 
@@ -48,6 +49,7 @@ describe('AuthenticationAuthenticatePage', () => {
       magicToken: null,
       successUrl: null,
       token: tokenProvider.hash(token),
+      userAgent: 'user-agent-1',
       authenticatedAt: new Date('2026-09-04T12:30:45.000Z'),
       expiresAt: new Date('2026-10-04T12:30:45.000Z'),
     });

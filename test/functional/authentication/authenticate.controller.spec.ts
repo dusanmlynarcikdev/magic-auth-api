@@ -28,7 +28,7 @@ describe('AuthenticationAuthenticateController', () => {
 
     const response = await request(app.getHttpServer())
       .post('/authentications/authenticate')
-      .send({ magicToken: 'magic-token-1' })
+      .send({ magicToken: 'magic-token-1', userAgent: 'user-agent-1' })
       .expect(HttpStatus.OK);
 
     expect(response.body).toStrictEqual({
@@ -43,6 +43,7 @@ describe('AuthenticationAuthenticateController', () => {
       magicToken: null,
       successUrl: null,
       token: tokenProvider.hash(response.body.token),
+      userAgent: 'user-agent-1',
       authenticatedAt: new Date('2026-09-04T12:30:45.000Z'),
       expiresAt: new Date('2026-10-04T12:30:45.000Z'),
     });

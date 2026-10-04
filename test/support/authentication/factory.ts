@@ -9,7 +9,7 @@ export default class AuthenticationFactory {
   ): Authentication {
     const authentication = AuthenticationFactory.create(undefined, now);
 
-    authentication.authenticate(token, now);
+    authentication.authenticate(token, 'user-agent-1', now);
 
     return authentication;
   }

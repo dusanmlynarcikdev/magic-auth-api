@@ -1,10 +1,10 @@
-import { Controller, Get, Query, Redirect, Res } from '@nestjs/common';
+import { Controller, Get, Headers, Query, Redirect, Res } from '@nestjs/common';
 
 import {
   AuthenticationExpiredError,
   AuthenticationNotFoundError,
 } from '../errors.js';
-import { AuthenticationAuthenticateRequest } from '../requests.js';
+import { AuthenticationAuthenticatePageRequest } from '../requests.js';
 import AuthenticationAuthenticateUseCase, {
   type AuthenticationAuthenticateResult,
 } from './use-case.js';
@@ -23,13 +23,17 @@ export default class AuthenticationAuthenticatePage {
   @Get()
   @Redirect()
   async authenticate(
-    @Query() request: AuthenticationAuthenticateRequest,
+    @Query() request: AuthenticationAuthenticatePageRequest,
+    @Headers('user-agent') userAgent: string | undefined,
     @Res({ passthrough: true }) response: Response,
   ): Promise<{ url: string }> {
     let result: AuthenticationAuthenticateResult;
 
     try {
-      result = await this.authenticateUseCase.execute(request.magicToken);
+      result = await this.authenticateUseCase.execute(
+        request.magicToken,
+        userAgent || null,
+      );
     } catch (error) {
       if (
         error instanceof AuthenticationNotFoundError ||

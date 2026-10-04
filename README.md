@@ -8,8 +8,7 @@
 ## How It Works
 
 Magic Auth API is a standalone microservice.
-It runs alongside your backend, which communicates with it via a REST API.
-It never talks to your users directly.
+It runs alongside your backend and exposes a REST API.
 
 See the [Integration Flow](#-integration-flow) for how the user sign-in flow works.
 
@@ -127,7 +126,7 @@ sequenceDiagram
     API-->>Backend: { magicToken }
     Backend->>User: Sends the magic link
     User->>Backend: Opens the magic link
-    Backend->>API: POST /authentications/authenticate<br/>{ magicToken }
+    Backend->>API: POST /authentications/authenticate<br/>{ magicToken, userAgent }
     API-->>Backend: { token }
     Backend-->>User: Stores the session token
 ```

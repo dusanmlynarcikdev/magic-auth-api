@@ -14,6 +14,7 @@ export default class AuthenticationAuthenticateController {
   async authenticate(@Body() request: AuthenticationAuthenticateRequest) {
     const { token } = await this.authenticateUseCase.execute(
       request.magicToken,
+      request.userAgent,
     );
 
     return { token };

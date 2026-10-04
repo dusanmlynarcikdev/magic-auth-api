@@ -32,6 +32,7 @@ export default class AuthenticationRepository {
     return db
       .select({
         id: authentications.id,
+        userAgent: authentications.userAgent,
         authenticatedAt: sql`${authentications.authenticatedAt}`.mapWith(
           authentications.authenticatedAt,
         ),
