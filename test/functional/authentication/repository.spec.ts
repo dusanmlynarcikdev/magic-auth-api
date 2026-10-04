@@ -58,6 +58,7 @@ describe('AuthenticationRepository', () => {
       expect(result).toHaveLength(1);
       expect(result[0]).toStrictEqual({
         id: authentication.id,
+        userAgent: 'user-agent-1',
         authenticatedAt: new Date('2026-09-04T12:30:45.000Z'),
         expiresAt: new Date('2026-10-04T12:30:45.000Z'),
       });
@@ -141,7 +142,7 @@ describe('AuthenticationRepository', () => {
     await repository.add(authentication1);
     await repository.add(authentication2);
 
-    authentication1.authenticate('token-1', now);
+    authentication1.authenticate('token-1', null, now);
 
     await repository.update(authentication1);
 

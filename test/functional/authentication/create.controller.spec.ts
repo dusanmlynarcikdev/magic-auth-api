@@ -33,6 +33,7 @@ describe('AuthenticationCreateController', () => {
       magicToken: new TokenProvider().hash(response.body.magicToken),
       successUrl: '/success',
       token: null,
+      userAgent: null,
       authenticatedAt: null,
       expiresAt: new Date('2026-09-04T12:40:45.000Z'),
     });
