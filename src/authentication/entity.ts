@@ -15,6 +15,7 @@ export default class Authentication {
     private _token: string | null,
     private _userAgent: string | null,
     private _authenticatedAt: Date | null,
+    private _lastUsedAt: Date | null,
     private _expiresAt: Date,
   ) {}
 
@@ -32,6 +33,7 @@ export default class Authentication {
       null,
       null,
       null,
+      null,
       Authentication.createExpiresAt(now),
     );
   }
@@ -45,6 +47,8 @@ export default class Authentication {
       row.token,
       row.userAgent,
       row.authenticatedAt,
+      // FB-1, see docs/fallbacks.md
+      row.lastUsedAt ?? row.authenticatedAt,
       row.expiresAt,
     );
   }
@@ -58,6 +62,7 @@ export default class Authentication {
       token: this.token,
       userAgent: this.userAgent,
       authenticatedAt: this.authenticatedAt,
+      lastUsedAt: this.lastUsedAt,
       expiresAt: this.expiresAt,
     };
   }
@@ -82,6 +87,10 @@ export default class Authentication {
     return this._authenticatedAt;
   }
 
+  get lastUsedAt(): Date | null {
+    return this._lastUsedAt;
+  }
+
   get expiresAt(): Date {
     return this._expiresAt;
   }
@@ -100,10 +109,19 @@ export default class Authentication {
     this._token = token;
     this._userAgent = userAgent;
     this._authenticatedAt = now;
+    this._lastUsedAt = now;
     this._expiresAt = Authentication.createExpiresAt(
       now,
       Authentication.THIRTY_DAYS_MILLISECONDS,
     );
+  }
+
+  updateLastUsedAt(now: Date): void {
+    if (!this.lastUsedAt) {
+      throw new Error('Missing last used at');
+    }
+
+    this._lastUsedAt = now;
   }
 
   isExpired(now: Date): boolean {

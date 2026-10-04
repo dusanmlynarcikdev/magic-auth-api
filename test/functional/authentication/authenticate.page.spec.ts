@@ -51,6 +51,7 @@ describe('AuthenticationAuthenticatePage', () => {
       token: tokenProvider.hash(token),
       userAgent: 'user-agent-1',
       authenticatedAt: new Date('2026-09-04T12:30:45.000Z'),
+      lastUsedAt: new Date('2026-09-04T12:30:45.000Z'),
       expiresAt: new Date('2026-10-04T12:30:45.000Z'),
     });
   });

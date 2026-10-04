@@ -35,6 +35,7 @@ describe('AuthenticationCreateController', () => {
       token: null,
       userAgent: null,
       authenticatedAt: null,
+      lastUsedAt: null,
       expiresAt: new Date('2026-09-04T12:40:45.000Z'),
     });
   });

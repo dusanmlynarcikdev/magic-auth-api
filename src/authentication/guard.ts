@@ -30,10 +30,14 @@ export default class AuthenticationGuard implements CanActivate {
     const authentication = await this.authenticationRepository.findOneByToken(
       this.tokenProvider.hash(token),
     );
+    const now = this.clockProvider.now();
 
-    if (!authentication || authentication.isExpired(this.clockProvider.now())) {
+    if (!authentication || authentication.isExpired(now)) {
       throw new UnauthorizedException();
     }
+
+    authentication.updateLastUsedAt(now);
+    await this.authenticationRepository.update(authentication);
 
     (request as AuthenticatedRequest).authentication = authentication;
 
