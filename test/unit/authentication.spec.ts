@@ -21,6 +21,7 @@ describe('Authentication', () => {
     expect(authentication.token).toBeNull();
     expect(authentication.userAgent).toBeNull();
     expect(authentication.authenticatedAt).toBeNull();
+    expect(authentication.lastUsedAt).toBeNull();
     expect(authentication.expiresAt).toStrictEqual(
       new Date('2026-09-04T12:40:45.000Z'),
     );
@@ -37,6 +38,7 @@ describe('Authentication', () => {
       expect(authentication.token).toBe(token);
       expect(authentication.userAgent).toBe('user-agent-1');
       expect(authentication.authenticatedAt).toBe(now);
+      expect(authentication.lastUsedAt).toBe(now);
       expect(authentication.expiresAt).toStrictEqual(
         new Date('2026-10-04T12:30:45.000Z'),
       );
@@ -61,6 +63,25 @@ describe('Authentication', () => {
           new Date('2026-09-04T12:40:45.001Z'),
         ),
       ).toThrow(AuthenticationExpiredError);
+    });
+  });
+
+  describe('updateLastUsedAt', () => {
+    it('success', () => {
+      const authentication = AuthenticationFactory.authenticated();
+      const now = new Date('2026-09-10T08:15:30.000Z');
+
+      authentication.updateLastUsedAt(now);
+
+      expect(authentication.lastUsedAt).toBe(now);
+    });
+
+    it('missing last used at', () => {
+      const authentication = AuthenticationFactory.create();
+
+      expect(() => authentication.updateLastUsedAt(now)).toThrow(
+        'Missing last used at',
+      );
     });
   });
 
@@ -99,6 +120,7 @@ describe('Authentication', () => {
         token: null,
         userAgent: null,
         authenticatedAt: null,
+        lastUsedAt: null,
         expiresAt: authentication.expiresAt,
       });
     });
@@ -115,6 +137,7 @@ describe('Authentication', () => {
         token: authentication.token,
         userAgent: authentication.userAgent,
         authenticatedAt: now,
+        lastUsedAt: now,
         expiresAt: authentication.expiresAt,
       });
     });
@@ -129,7 +152,8 @@ describe('Authentication', () => {
       token: 'token-1',
       userAgent: 'user-agent-1',
       authenticatedAt: now,
-      expiresAt: new Date('2026-09-04T12:30:45.001Z'),
+      lastUsedAt: new Date('2026-09-04T12:30:45.001Z'),
+      expiresAt: new Date('2026-09-04T12:30:45.002Z'),
     };
 
     const authentication = Authentication.fromRow(row);
@@ -141,6 +165,7 @@ describe('Authentication', () => {
     expect(authentication.token).toBe(row.token);
     expect(authentication.userAgent).toBe(row.userAgent);
     expect(authentication.authenticatedAt).toBe(row.authenticatedAt);
+    expect(authentication.lastUsedAt).toBe(row.lastUsedAt);
     expect(authentication.expiresAt).toBe(row.expiresAt);
   });
 });

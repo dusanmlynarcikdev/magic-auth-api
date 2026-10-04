@@ -16,6 +16,7 @@ export const authentications = snakeCase.table(
     token: varchar().unique(),
     userAgent: varchar(),
     authenticatedAt: timestamp({ withTimezone: true }),
+    lastUsedAt: timestamp({ withTimezone: true }),
     expiresAt: timestamp({ withTimezone: true }).notNull(),
   },
   (table) => [index().on(table.userExternalId), index().on(table.expiresAt)],

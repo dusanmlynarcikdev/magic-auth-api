@@ -34,6 +34,7 @@ describe('AuthenticationListController', () => {
         id: authentication.id,
         userAgent: 'user-agent-1',
         authenticatedAt: '2026-09-04T12:30:45.000Z',
+        lastUsedAt: '2026-09-04T12:30:45.000Z',
         expiresAt: '2026-10-04T12:30:45.000Z',
       },
     ]);

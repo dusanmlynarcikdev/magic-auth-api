@@ -33,6 +33,19 @@ describe('AuthenticationGuard', () => {
     expect(request.authentication.id).toBe(authentication.id);
   });
 
+  it('last used at updated', async () => {
+    const authentication = AuthenticationFactory.authenticated(
+      tokenProvider.hash('token-1'),
+      new Date('2026-09-03T08:15:30.000Z'),
+    );
+    await repository.add(authentication);
+
+    await guard.canActivate(createContext('Bearer token-1'));
+
+    const _authentication = await repository.get(authentication.id);
+    expect(_authentication.lastUsedAt).toStrictEqual(AuthenticationFactory.NOW);
+  });
+
   it('authentication expired', async () => {
     await repository.add(
       AuthenticationFactory.authenticated(
