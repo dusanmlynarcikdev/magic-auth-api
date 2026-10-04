@@ -41,7 +41,6 @@ export default class AuthenticationRepository {
           sql`coalesce(${authentications.lastUsedAt}, ${authentications.authenticatedAt})`.mapWith(
             authentications.lastUsedAt,
           ),
-        expiresAt: authentications.expiresAt,
       })
       .from(authentications)
       .where(
