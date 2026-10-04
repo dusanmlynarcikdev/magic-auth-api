@@ -13,12 +13,16 @@ export default class AuthenticationCreateUseCase {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async execute(userExternalId: string): Promise<string> {
+  async execute(
+    userExternalId: string,
+    successUrl: string | null,
+  ): Promise<string> {
     const magicToken = this.tokenProvider.generate();
 
     const authentication = Authentication.create(
       userExternalId,
       this.tokenProvider.hash(magicToken),
+      successUrl,
       this.clockProvider.now(),
     );
 

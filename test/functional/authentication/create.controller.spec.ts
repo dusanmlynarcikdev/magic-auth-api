@@ -18,7 +18,7 @@ describe('AuthenticationCreateController', () => {
   it('create', async () => {
     const response = await request(app.getHttpServer())
       .post('/authentications')
-      .send({ userExternalId: 'user-1' })
+      .send({ userExternalId: 'user-1', successUrl: '/success' })
       .expect(HttpStatus.CREATED);
 
     expect(response.body).toStrictEqual({
@@ -31,6 +31,7 @@ describe('AuthenticationCreateController', () => {
       id: expect.any(String),
       userExternalId: 'user-1',
       magicToken: new TokenProvider().hash(response.body.magicToken),
+      successUrl: '/success',
       token: null,
       authenticatedAt: null,
       expiresAt: new Date('2026-09-04T12:40:45.000Z'),

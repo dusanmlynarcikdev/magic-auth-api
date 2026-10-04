@@ -8,10 +8,16 @@ describe('Authentication', () => {
   const token = 'token-1';
 
   it('create', () => {
-    const authentication = Authentication.create('user-1', token, now);
+    const authentication = Authentication.create(
+      'user-1',
+      token,
+      '/success',
+      now,
+    );
 
     expect(authentication.userExternalId).toBe('user-1');
     expect(authentication.magicToken).toBe(token);
+    expect(authentication.successUrl).toBe('/success');
     expect(authentication.token).toBeNull();
     expect(authentication.authenticatedAt).toBeNull();
     expect(authentication.expiresAt).toStrictEqual(
@@ -26,6 +32,7 @@ describe('Authentication', () => {
       authentication.authenticate(token, now);
 
       expect(authentication.magicToken).toBeNull();
+      expect(authentication.successUrl).toBeNull();
       expect(authentication.token).toBe(token);
       expect(authentication.authenticatedAt).toBe(now);
       expect(authentication.expiresAt).toStrictEqual(
@@ -75,12 +82,17 @@ describe('Authentication', () => {
 
   describe('toRow', () => {
     it('unauthenticated', () => {
-      const authentication = AuthenticationFactory.create();
+      const authentication = AuthenticationFactory.create(
+        undefined,
+        undefined,
+        '/success',
+      );
 
       expect(authentication.toRow()).toStrictEqual({
         id: authentication.id,
         userExternalId: authentication.userExternalId,
         magicToken: authentication.magicToken,
+        successUrl: authentication.successUrl,
         token: null,
         authenticatedAt: null,
         expiresAt: authentication.expiresAt,
@@ -95,6 +107,7 @@ describe('Authentication', () => {
         id: authentication.id,
         userExternalId: authentication.userExternalId,
         magicToken: null,
+        successUrl: null,
         token: authentication.token,
         authenticatedAt: now,
         expiresAt: authentication.expiresAt,
@@ -107,6 +120,7 @@ describe('Authentication', () => {
       id: '00000000-0000-0000-0000-000000000000',
       userExternalId: 'user-1',
       magicToken: 'magic-token-1',
+      successUrl: '/success',
       token: 'token-1',
       authenticatedAt: now,
       expiresAt: new Date('2026-09-04T12:30:45.001Z'),
@@ -117,6 +131,7 @@ describe('Authentication', () => {
     expect(authentication.id).toBe(row.id);
     expect(authentication.userExternalId).toBe(row.userExternalId);
     expect(authentication.magicToken).toBe(row.magicToken);
+    expect(authentication.successUrl).toBe(row.successUrl);
     expect(authentication.token).toBe(row.token);
     expect(authentication.authenticatedAt).toBe(row.authenticatedAt);
     expect(authentication.expiresAt).toBe(row.expiresAt);

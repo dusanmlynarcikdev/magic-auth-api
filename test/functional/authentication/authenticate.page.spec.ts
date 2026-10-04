@@ -8,8 +8,10 @@ import { createApplication } from '../../support/application.js';
 import AuthenticationFactory from '../../support/authentication/factory.js';
 import AuthenticationQuery from '../../support/authentication/query.js';
 
-describe('AuthenticationAuthenticateController', () => {
+describe('AuthenticationAuthenticatePage', () => {
   let app: INestApplication<App>;
+  const repository = new AuthenticationRepository();
+  const tokenProvider = new TokenProvider();
 
   beforeEach(async () => {
     app = await createApplication();
@@ -18,22 +20,25 @@ describe('AuthenticationAuthenticateController', () => {
   afterEach(() => app.close());
 
   it('authenticate', async () => {
-    const repository = new AuthenticationRepository();
-    const tokenProvider = new TokenProvider();
-
     const authentication = AuthenticationFactory.create(
       tokenProvider.hash('magic-token-1'),
+      undefined,
+      '/success',
     );
     await repository.add(authentication);
 
     const response = await request(app.getHttpServer())
-      .post('/authentications/authenticate')
-      .send({ magicToken: 'magic-token-1' })
-      .expect(HttpStatus.OK);
+      .get('/authenticate?magicToken=magic-token-1')
+      .expect(HttpStatus.FOUND)
+      .expect('Location', '/success');
 
-    expect(response.body).toStrictEqual({
-      token: expect.stringMatching(/^[\w-]{43}$/),
-    });
+    const cookies = response.headers['set-cookie'];
+    expect(cookies).toStrictEqual([
+      expect.stringMatching(
+        /^auth_token=[\w-]{43}; Max-Age=34560000; Path=\/; Expires=.+; Secure; SameSite=Lax$/,
+      ),
+    ]);
+    const token = cookies[0].split(';')[0].replace('auth_token=', '');
 
     const authenticationRows = await AuthenticationQuery.findAll();
     expect(authenticationRows).toHaveLength(1);
@@ -42,9 +47,22 @@ describe('AuthenticationAuthenticateController', () => {
       userExternalId: 'user-1',
       magicToken: null,
       successUrl: null,
-      token: tokenProvider.hash(response.body.token),
+      token: tokenProvider.hash(token),
       authenticatedAt: new Date('2026-09-04T12:30:45.000Z'),
       expiresAt: new Date('2026-10-04T12:30:45.000Z'),
     });
+  });
+
+  it('expired', async () => {
+    const authentication = AuthenticationFactory.create(
+      tokenProvider.hash('magic-token-1'),
+      new Date('2026-09-04T12:20:44.000Z'),
+    );
+    await repository.add(authentication);
+
+    await request(app.getHttpServer())
+      .get('/authenticate?magicToken=magic-token-1')
+      .expect(HttpStatus.FOUND)
+      .expect('Location', '/error');
   });
 });

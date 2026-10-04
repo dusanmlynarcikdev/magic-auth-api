@@ -12,7 +12,9 @@ export default class AuthenticationAuthenticateController {
   @Post('authenticate')
   @HttpCode(HttpStatus.OK)
   async authenticate(@Body() request: AuthenticationAuthenticateRequest) {
-    const token = await this.authenticateUseCase.execute(request.magicToken);
+    const { token } = await this.authenticateUseCase.execute(
+      request.magicToken,
+    );
 
     return { token };
   }

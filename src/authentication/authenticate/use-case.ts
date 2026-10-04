@@ -4,6 +4,11 @@ import ClockProvider from '../../clock.provider.js';
 import TokenProvider from '../../token.provider.js';
 import AuthenticationRepository from '../repository.js';
 
+export interface AuthenticationAuthenticateResult {
+  readonly token: string;
+  readonly successUrl: string | null;
+}
+
 @Injectable()
 export default class AuthenticationAuthenticateUseCase {
   constructor(
@@ -12,11 +17,12 @@ export default class AuthenticationAuthenticateUseCase {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async execute(magicToken: string): Promise<string> {
+  async execute(magicToken: string): Promise<AuthenticationAuthenticateResult> {
     const authentication = await this.authenticationRepository.getByMagicToken(
       this.tokenProvider.hash(magicToken),
     );
 
+    const successUrl = authentication.successUrl;
     const token = this.tokenProvider.generate();
     authentication.authenticate(
       this.tokenProvider.hash(token),
@@ -24,6 +30,6 @@ export default class AuthenticationAuthenticateUseCase {
     );
     await this.authenticationRepository.update(authentication);
 
-    return token;
+    return { token, successUrl };
   }
 }

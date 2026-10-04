@@ -9,7 +9,10 @@ export default class AuthenticationCreateController {
 
   @Post()
   async create(@Body() request: AuthenticationCreateRequest) {
-    const magicToken = await this.createUseCase.execute(request.userExternalId);
+    const magicToken = await this.createUseCase.execute(
+      request.userExternalId,
+      request.successUrl ?? null,
+    );
 
     return { magicToken };
   }

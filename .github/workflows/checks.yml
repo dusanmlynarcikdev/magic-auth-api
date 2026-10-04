@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@database:5432/test
+      ENV_FILE: .env.test
 
     steps:
       - name: Checkout
@@ -31,12 +31,12 @@ jobs:
 
       - name: Database schema
         run: |
-          docker run --network network -e DATABASE_URL api npm run db:migrate
-          docker run --network network -e DATABASE_URL api npm run db:check | tee /tmp/db-check
+          docker run --network network --env-file $ENV_FILE api npm run db:migrate
+          docker run --network network --env-file $ENV_FILE api npm run db:check | tee /tmp/db-check
           grep -q no_changes /tmp/db-check
 
       - name: Tests
-        run: docker run --network network -e DATABASE_URL api npm run test:cov
+        run: docker run --network network --env-file $ENV_FILE api npm run test:cov
 
       - name: Lint
         run: docker run api npm run lint
