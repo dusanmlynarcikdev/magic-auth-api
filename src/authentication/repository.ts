@@ -29,6 +29,12 @@ export default class AuthenticationRepository {
     userExternalId: string,
     now: Date,
   ): Promise<AuthenticationDto[]> {
+    // FB-1, see docs/fallbacks.md
+    const lastUsedAt =
+      sql`coalesce(${authentications.lastUsedAt}, ${authentications.authenticatedAt})`.mapWith(
+        authentications.lastUsedAt,
+      );
+
     return db
       .select({
         id: authentications.id,
@@ -36,11 +42,7 @@ export default class AuthenticationRepository {
         authenticatedAt: sql`${authentications.authenticatedAt}`.mapWith(
           authentications.authenticatedAt,
         ),
-        // FB-1, see docs/fallbacks.md
-        lastUsedAt:
-          sql`coalesce(${authentications.lastUsedAt}, ${authentications.authenticatedAt})`.mapWith(
-            authentications.lastUsedAt,
-          ),
+        lastUsedAt,
       })
       .from(authentications)
       .where(
@@ -50,7 +52,7 @@ export default class AuthenticationRepository {
           gte(authentications.expiresAt, now),
         ),
       )
-      .orderBy(desc(authentications.id));
+      .orderBy(desc(lastUsedAt));
   }
 
   async remove(authentication: Authentication): Promise<void> {
