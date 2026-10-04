@@ -11,7 +11,7 @@ describe('AuthenticationListController', () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
-    app = await createApplication();
+    app = await createApplication(new Date('2026-09-04T12:30:46.000Z'));
   });
 
   afterEach(() => app.close());
@@ -35,17 +35,17 @@ describe('AuthenticationListController', () => {
 
     expect(response.body).toStrictEqual([
       {
+        id: authentication.id,
+        userAgent: 'user-agent-1',
+        authenticatedAt: '2026-09-04T12:30:45.000Z',
+        lastUsedAt: '2026-09-04T12:30:46.000Z',
+        isCurrent: true,
+      },
+      {
         id: authentication2.id,
         userAgent: 'user-agent-1',
         authenticatedAt: '2026-09-04T12:30:45.000Z',
         lastUsedAt: '2026-09-04T12:30:45.000Z',
-      },
-      {
-        id: authentication.id,
-        userAgent: 'user-agent-1',
-        authenticatedAt: '2026-09-04T12:30:45.000Z',
-        lastUsedAt: '2026-09-04T12:30:45.000Z',
-        isCurrent: true,
       },
     ]);
   });
